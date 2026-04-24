@@ -13,6 +13,7 @@ class WalletIntroScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.darkBackground,
       body: Stack(
         fit: StackFit.expand,
         children: [

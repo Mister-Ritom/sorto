@@ -288,7 +288,7 @@ class _SubmissionCount extends StatelessWidget {
         Text('👥', style: const TextStyle(fontSize: 11)),
         const SizedBox(width: 3),
         Text('$count',
-            style: AppTypography.labelS(color: AppColors.darkTextSecondary)),
+            style: AppTypography.labelS()),
       ],
     );
   }

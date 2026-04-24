@@ -225,7 +225,7 @@ class PerformerPostDetailScreen extends ConsumerWidget {
                   Center(
                     child: Text(
                       '✅ This is your creator post',
-                      style: AppTypography.bodyM(color: AppColors.darkTextSecondary),
+                      style: AppTypography.bodyM(),
                     ).animate(delay: 400.ms).fadeIn(),
                   ),
 

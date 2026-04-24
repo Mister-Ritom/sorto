@@ -351,13 +351,12 @@ class _TransactionRow extends StatelessWidget {
                 Text(txn.type.label, style: AppTypography.labelL()),
                 if (txn.description != null)
                   Text(txn.description!,
-                      style: AppTypography.bodyS(
-                          color: AppColors.darkTextSecondary),
+                      style: AppTypography.bodyS(),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis),
                 Text(Formatters.shortDate(txn.createdAt),
                     style: AppTypography.bodyS(
-                        color: AppColors.darkTextMuted)),
+                        color: Theme.of(context).colorScheme.outline)),
               ],
             ),
           ),

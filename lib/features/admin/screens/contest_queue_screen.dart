@@ -47,7 +47,7 @@ class ContestQueueScreen extends ConsumerWidget {
                   const SizedBox(height: 12),
                   Text(
                     'No dares are currently pending admin review.',
-                    style: AppTypography.bodyM(color: AppColors.darkTextSecondary),
+                    style: AppTypography.bodyM(),
                     textAlign: TextAlign.center,
                   ),
                 ],

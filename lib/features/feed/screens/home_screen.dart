@@ -9,6 +9,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../features/feed/feed_provider.dart';
 import '../../../features/notifications/notifications_provider.dart';
+import '../../../features/auth/auth_provider.dart';
 import '../../../shared/widgets/skeleton_loader.dart';
 import '../../../shared/widgets/coin_chip.dart';
 import '../../../shared/widgets/sorto_fab.dart';
@@ -74,7 +75,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
             snap: true,
             backgroundColor: bg,
             elevation: 0,
-            titleSpacing: 20,
+            titleSpacing: 0,
+            leading: IconButton(
+              icon: Consumer(
+                builder: (ctx, ref, _) {
+                  final profile = ref.watch(currentProfileProvider).value;
+                  return CircleAvatar(
+                    radius: 14,
+                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    backgroundImage: profile?.avatarUrl != null
+                        ? NetworkImage(profile!.avatarUrl!)
+                        : null,
+                    child: profile?.avatarUrl == null
+                        ? const Icon(Icons.person_rounded,
+                            size: 18, color: AppColors.primary)
+                        : null,
+                  );
+                },
+              ),
+              onPressed: () => context.push(Routes.profileSelf),
+            ),
             title: ShaderMask(
               shaderCallback: (b) => AppColors.brandGradient.createShader(b),
               child: Text(
@@ -174,7 +194,6 @@ class _CategoryFilterBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
     return SizedBox(
       height: 44,
       child: ListView(

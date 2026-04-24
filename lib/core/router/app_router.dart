@@ -45,6 +45,9 @@ import '../../features/profile/screens/public_profile_screen.dart';
 // Notifications
 import '../../features/notifications/screens/notifications_screen.dart';
 
+// Settings
+import '../../features/settings/screens/settings_screen.dart';
+
 // Admin
 import '../../features/admin/screens/contest_queue_screen.dart';
 
@@ -95,6 +98,7 @@ class Routes {
   static String profilePublicPath(String username) => '/profile/$username';
 
   static const notifications = '/notifications';
+  static const settings = '/settings';
   static const adminContestQueue = '/admin/contests';
 }
 
@@ -279,6 +283,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.notifications,
         pageBuilder: (ctx, state) => _slidePage(const NotificationsScreen()),
+      ),
+      GoRoute(
+        path: Routes.settings,
+        pageBuilder: (ctx, state) => _slidePage(const SettingsScreen()),
       ),
 
       // ─── ADMIN ─────────────────────────────────────────────────────────

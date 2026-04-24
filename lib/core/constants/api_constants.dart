@@ -31,11 +31,12 @@ class ApiConstants {
   static String notificationsChannel(String userId) => 'notifications:$userId';
 
   // Razorpay (Web)
-  static const String razorpayKeyId = 'rzp_test_PLACEHOLDER';
+  static const String razorpayKeyId = 'rzp_test_ShQ0F2kKESEWDW';
 
   // RevenueCat (Native)
-  static const String revenuecatAppleKey = 'appl_PLACEHOLDER';
-  static const String revenuecatGoogleKey = 'goog_PLACEHOLDER';
+  static const String revenuecatAppleKey = 'test_nniGqWFpDtkWSNGYbHayiDVTSoi';
+  static const String revenuecatGoogleKey = 'test_nniGqWFpDtkWSNGYbHayiDVTSoi';
+  static const String revenuecatWebKey = 'test_nniGqWFpDtkWSNGYbHayiDVTSoi';
 
   // Gemini (used server-side only — never exposed to client)
   // The client never calls Gemini directly.

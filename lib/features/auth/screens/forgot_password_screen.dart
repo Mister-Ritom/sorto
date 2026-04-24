@@ -86,7 +86,7 @@ class _FormState extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'Enter your email and we\'ll send you a reset link.',
-            style: AppTypography.bodyL(color: AppColors.darkTextSecondary),
+            style: AppTypography.bodyL(),
           ).animate().fadeIn(duration: 400.ms),
           const SizedBox(height: 32),
           TextFormField(
@@ -134,7 +134,7 @@ class _SuccessState extends StatelessWidget {
           const SizedBox(height: 8),
           Text(
             'We sent you a link to reset your password.',
-            style: AppTypography.bodyM(color: AppColors.darkTextSecondary),
+            style: AppTypography.bodyM(),
             textAlign: TextAlign.center,
           ).animate(delay: 400.ms).fadeIn(duration: 400.ms),
         ],

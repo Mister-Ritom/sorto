@@ -1,5 +1,6 @@
 // lib/features/dares/screens/submit_proof_screen.dart
-import 'dart:io';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:io' as io;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -23,7 +24,7 @@ class SubmitProofScreen extends ConsumerStatefulWidget {
 }
 
 class _SubmitProofScreenState extends ConsumerState<SubmitProofScreen> {
-  File? _videoFile;
+  XFile? _pickedVideo;
   VideoPlayerController? _vpCtrl;
   final _descCtrl = TextEditingController();
   bool _uploading = false;
@@ -44,21 +45,26 @@ class _SubmitProofScreenState extends ConsumerState<SubmitProofScreen> {
     );
     if (picked == null) return;
 
-    final file = File(picked.path);
-    final vpCtrl = VideoPlayerController.file(file);
+    final VideoPlayerController vpCtrl;
+    if (kIsWeb) {
+      vpCtrl = VideoPlayerController.networkUrl(Uri.parse(picked.path));
+    } else {
+      vpCtrl = VideoPlayerController.file(io.File(picked.path));
+    }
+
     await vpCtrl.initialize();
     vpCtrl.setLooping(true);
     vpCtrl.play();
 
     setState(() {
-      _videoFile = file;
+      _pickedVideo = picked;
       _vpCtrl?.dispose();
       _vpCtrl = vpCtrl;
     });
   }
 
   Future<void> _submit() async {
-    if (_videoFile == null) return;
+    if (_pickedVideo == null) return;
     HapticFeedback.mediumImpact();
     setState(() { _uploading = true; _uploadProgress = 0; });
 
@@ -66,7 +72,7 @@ class _SubmitProofScreenState extends ConsumerState<SubmitProofScreen> {
       final svc = ref.read(supabaseServiceProvider);
       final userId = svc.currentUserId!;
       final path = '$userId/${widget.dareId}/${DateTime.now().millisecondsSinceEpoch}.mp4';
-      final bytes = await _videoFile!.readAsBytes();
+      final bytes = await _pickedVideo!.readAsBytes();
 
       // Simulate upload progress
       setState(() => _uploadProgress = 0.3);
@@ -152,7 +158,7 @@ class _SubmitProofScreenState extends ConsumerState<SubmitProofScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // ── Video picker ────────────────────────────────────────────
-            if (_videoFile == null) ...[
+            if (_pickedVideo == null) ...[
               Text('Upload your proof video', style: AppTypography.headingM())
                   .animate().fadeIn(duration: 400.ms),
               const SizedBox(height: 8),
@@ -229,7 +235,7 @@ class _SubmitProofScreenState extends ConsumerState<SubmitProofScreen> {
                 onPressed: () {
                   _vpCtrl?.dispose();
                   setState(() {
-                    _videoFile = null;
+                    _pickedVideo = null;
                     _vpCtrl = null;
                   });
                 },
@@ -276,7 +282,7 @@ class _SubmitProofScreenState extends ConsumerState<SubmitProofScreen> {
               label: 'Submit Proof',
               isLoading: _uploading,
               onPressed:
-                  (_videoFile != null && !_uploading) ? _submit : null,
+                  (_pickedVideo != null && !_uploading) ? _submit : null,
             ).animate(delay: 600.ms).fadeIn().slideY(begin: 0.3, end: 0),
           ],
         ),

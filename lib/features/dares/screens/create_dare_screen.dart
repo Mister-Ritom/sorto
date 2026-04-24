@@ -390,9 +390,7 @@ class _CreateDareScreenState extends ConsumerState<CreateDareScreen> {
                       const SizedBox(height: 10),
                       Text(
                         'Performer earns ${Formatters.coins((_bounty * 0.8).round())} · $balance SC available',
-                        style: AppTypography.bodyS(
-                          color: AppColors.darkTextSecondary,
-                        ),
+                        style: AppTypography.bodyS(),
                       ),
                       if (_bounty > 0 && _bounty < 10)
                         Padding(
@@ -498,9 +496,7 @@ class _CreateDareScreenState extends ConsumerState<CreateDareScreen> {
                           const Spacer(),
                           Text(
                             Formatters.fullDateTime(dt),
-                            style: AppTypography.bodyS(
-                              color: AppColors.darkTextSecondary,
-                            ),
+                            style: AppTypography.bodyS(),
                           ),
                           if (selected) ...[
                             const SizedBox(width: 8),
@@ -640,7 +636,7 @@ class _StepProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return LinearProgressIndicator(
       value: (current + 1) / total,
-      backgroundColor: AppColors.darkCardBorder,
+      backgroundColor: Theme.of(context).dividerColor,
       valueColor: const AlwaysStoppedAnimation<Color>(AppColors.primary),
       minHeight: 3,
     );

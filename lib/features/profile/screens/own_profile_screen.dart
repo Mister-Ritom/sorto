@@ -48,12 +48,8 @@ class _OwnProfileScreenState extends ConsumerState<OwnProfileScreen>
             onPressed: () => context.push(Routes.notifications),
           ),
           IconButton(
-            icon: const Icon(Icons.logout_rounded),
-            onPressed: () async {
-              HapticFeedback.mediumImpact();
-              await ref.read(authNotifierProvider.notifier).signOut();
-              if (context.mounted) context.go(Routes.signIn);
-            },
+            icon: const Icon(Icons.settings_rounded),
+            onPressed: () => context.push(Routes.settings),
           ),
         ],
       ),

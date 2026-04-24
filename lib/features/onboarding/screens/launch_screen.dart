@@ -114,7 +114,7 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: AppColors.darkBackground,
       body: AnimatedCoinBurst(
         controller: _burstController,
         child: SafeArea(

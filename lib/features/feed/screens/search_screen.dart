@@ -137,7 +137,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               children: [
                 Text('Mode:',
                     style: AppTypography.labelM(
-                        color: AppColors.darkTextSecondary)),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
                 const SizedBox(width: 8),
                 ...[null, 'solo', 'open_split', 'open_best']
                     .map((mode) => Padding(

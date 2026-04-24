@@ -123,7 +123,7 @@ class StatWidget extends StatelessWidget {
     return Column(
       children: [
         Text(value.toString(), style: AppTypography.headingL()),
-        Text(label, style: AppTypography.bodyS(color: AppColors.darkTextSecondary)),
+        Text(label, style: AppTypography.bodyS()),
       ],
     );
   }
@@ -273,7 +273,7 @@ class PostMiniCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Text(post.category,
                       style: AppTypography.bodyS(
-                          color: AppColors.darkTextSecondary)),
+                          color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary)),
                 ],
               ),
             ),
