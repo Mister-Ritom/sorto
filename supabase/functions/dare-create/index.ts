@@ -44,6 +44,59 @@ Deno.serve(async (req: Request) => {
     if (walletErr || !wallet) throw new Error('Wallet not found');
     if (wallet.coin_balance < bounty_amount) throw new Error('Insufficient balance');
 
+    // ── AI Moderation ─────────────────────────────────────────────────────────
+    try {
+      const geminiKey = Deno.env.get('GEMINI_API_KEY');
+      if (geminiKey) {
+        const moderationPrompt = `You are a content moderation AI for a dare platform called Sorto.
+Review this dare for harmful content, nudity, or other violations.
+Title: "${title}"
+Description: "${description}"
+Category: "${category}"
+Tags: [${tags.join(', ')}]
+
+Assess the severity of harmfulness.`;
+
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1/models/gemini-flash-lite-latest:generateContent?key=${geminiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              contents: [{ parts: [{ text: moderationPrompt }] }],
+              generationConfig: {
+                responseMimeType: 'application/json',
+                responseSchema: {
+                  type: 'OBJECT',
+                  properties: {
+                    toxicity_score: { type: 'INTEGER', description: 'Score from 0 to 100 for harmful/toxic content' },
+                    nudity_score: { type: 'INTEGER', description: 'Score from 0 to 100 for sexual content' },
+                    violence_score: { type: 'INTEGER', description: 'Score from 0 to 100 for violent content' },
+                    overall_risk_score: { type: 'INTEGER', description: 'Overall severity score from 0 to 100' },
+                    explanation: { type: 'STRING', description: 'Reasoning for the scores' }
+                  },
+                  required: ['toxicity_score', 'nudity_score', 'violence_score', 'overall_risk_score', 'explanation']
+                }
+              }
+            }),
+          }
+        );
+        const geminiData = await geminiRes.json();
+        const rawText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
+        if (rawText) {
+          const parsed = JSON.parse(rawText);
+          if (parsed.overall_risk_score >= 95) {
+            throw new Error(`Dare rejected due to harmful content. Reason: ${parsed.explanation || 'Overall risk score too high'}`);
+          }
+        }
+      }
+    } catch (aiErr) {
+      if (aiErr instanceof Error && aiErr.message.includes('Dare rejected')) {
+        throw aiErr;
+      }
+      console.error('AI Moderation error:', aiErr);
+    }
+
     // ── Atomic DB transaction ─────────────────────────────────────────────────
     // 1. Create dare
     const { data: dare, error: dareErr } = await supabase

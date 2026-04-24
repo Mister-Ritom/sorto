@@ -58,41 +58,50 @@ Deno.serve(async (req: Request) => {
         const moderationPrompt = `You are a content moderation AI for a dare platform called Sorto.
 The dare requirement is: "${dare.title}". ${dare.description}
 
-Review this video URL: ${signedUrl.signedUrl}
+Review this video URL (and proof text if any): ${signedUrl.signedUrl}
+Proof text: ${proof_text || ''}
 
-Respond with JSON:
-{
-  "verdict": "approved" | "rejected" | "escalated",
-  "confidence": 0.00-1.00,
-  "harm_score": 0.00-1.00,
-  "completed_dare": true|false,
-  "reason": "brief reason"
-}
-
-Auto-reject if: nudity, extreme violence, illegal activity, harm to others. harm_score > 0.90 = reject.`;
+Assess the content for harmfulness, nudity, or other violations.`;
 
         const geminiRes = await fetch(
-          `https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
+          `https://generativelanguage.googleapis.com/v1/models/gemini-flash-lite-latest:generateContent?key=${geminiKey}`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               contents: [{ parts: [{ text: moderationPrompt }] }],
-              generationConfig: { response_mime_type: 'application/json' }
+              generationConfig: {
+                responseMimeType: 'application/json',
+                responseSchema: {
+                  type: 'OBJECT',
+                  properties: {
+                    toxicity_score: { type: 'INTEGER', description: 'Score from 0 to 100 for harmful/toxic content' },
+                    nudity_score: { type: 'INTEGER', description: 'Score from 0 to 100 for sexual content' },
+                    violence_score: { type: 'INTEGER', description: 'Score from 0 to 100 for violent content' },
+                    overall_risk_score: { type: 'INTEGER', description: 'Overall severity score from 0 to 100' },
+                    explanation: { type: 'STRING', description: 'Reasoning for the scores' }
+                  },
+                  required: ['toxicity_score', 'nudity_score', 'violence_score', 'overall_risk_score', 'explanation']
+                }
+              }
             }),
           }
         );
         const geminiData = await geminiRes.json();
-        const rawText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text ?? '{}';
-        const parsed = JSON.parse(rawText);
-        aiVerdict = parsed.verdict ?? 'pending';
-        aiConfidence = parsed.confidence ?? 0;
-        aiHarmScore = parsed.harm_score ?? 0;
-        aiRawResponse = parsed;
+        const rawText = geminiData?.candidates?.[0]?.content?.parts?.[0]?.text;
+        
+        if (rawText) {
+          const parsed = JSON.parse(rawText);
+          aiHarmScore = parsed.overall_risk_score ?? 0;
+          aiRawResponse = parsed;
 
-        // Auto-reject on high harm
-        if (aiHarmScore >= AUTO_REJECT_HARM_THRESHOLD) {
-          aiVerdict = 'rejected';
+          if (aiHarmScore < 80) {
+            aiVerdict = 'approved';
+          } else if (aiHarmScore < 95) {
+            aiVerdict = 'escalated'; // Warning state
+          } else {
+            aiVerdict = 'rejected';
+          }
         }
       }
     } catch (_aiErr) {
@@ -147,7 +156,7 @@ Auto-reject if: nudity, extreme violence, illegal activity, harm to others. harm
           user_id: dare.poster_id,
           type: 'proof_submitted',
           title: '📹 Proof submitted!',
-          body: `Someone submitted proof for your dare "${dare.title}". ${aiVerdict === 'escalated' ? '(Flagged for review)' : 'Review and approve/reject.'}`,
+          body: `Someone submitted proof for your dare "${dare.title}". ${aiVerdict === 'escalated' ? '(⚠️ Content Warning: High risk score)' : 'Review and approve/reject.'}`,
           dare_id,
         },
         {
