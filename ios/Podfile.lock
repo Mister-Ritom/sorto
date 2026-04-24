@@ -4,19 +4,27 @@ PODS:
   - camera_avfoundation (0.0.1):
     - Flutter
   - Flutter (1.0.0)
+  - flutter_inappwebview_ios (0.0.1):
+    - Flutter
+    - flutter_inappwebview_ios/Core (= 0.0.1)
+    - swift-collections (~> 1.1.1)
+  - flutter_inappwebview_ios/Core (0.0.1):
+    - Flutter
+    - swift-collections (~> 1.1.1)
   - image_picker_ios (0.0.1):
+    - Flutter
+  - InternalCollectionsUtilities (1.1.1)
+  - package_info_plus (0.4.5):
     - Flutter
   - purchases_flutter (10.0.1):
     - Flutter
     - PurchasesHybridCommon (= 18.1.0)
   - PurchasesHybridCommon (18.1.0):
     - RevenueCat (= 5.68.0)
-  - razorpay-core-pod (1.0.6)
-  - razorpay-pod (1.5.3):
-    - razorpay-core-pod (= 1.0.6)
-  - razorpay_flutter (1.1.10):
+  - razorpay-pod (1.3.2)
+  - razorpay_web (1.1.10):
     - Flutter
-    - razorpay-pod
+    - razorpay-pod (= 1.3.2)
   - RevenueCat (5.68.0)
   - shared_preferences_foundation (0.0.1):
     - Flutter
@@ -24,6 +32,22 @@ PODS:
   - sqflite_darwin (0.0.4):
     - Flutter
     - FlutterMacOS
+  - swift-collections (1.1.1):
+    - swift-collections/BitCollections (= 1.1.1)
+    - swift-collections/DequeModule (= 1.1.1)
+    - swift-collections/HashTreeCollections (= 1.1.1)
+    - swift-collections/HeapModule (= 1.1.1)
+    - swift-collections/OrderedCollections (= 1.1.1)
+  - swift-collections/BitCollections (1.1.1):
+    - InternalCollectionsUtilities (= 1.1.1)
+  - swift-collections/DequeModule (1.1.1):
+    - InternalCollectionsUtilities (= 1.1.1)
+  - swift-collections/HashTreeCollections (1.1.1):
+    - InternalCollectionsUtilities (= 1.1.1)
+  - swift-collections/HeapModule (1.1.1):
+    - InternalCollectionsUtilities (= 1.1.1)
+  - swift-collections/OrderedCollections (1.1.1):
+    - InternalCollectionsUtilities (= 1.1.1)
   - url_launcher_ios (0.0.1):
     - Flutter
   - video_player_avfoundation (0.0.1):
@@ -34,9 +58,11 @@ DEPENDENCIES:
   - app_links (from `.symlinks/plugins/app_links/ios`)
   - camera_avfoundation (from `.symlinks/plugins/camera_avfoundation/ios`)
   - Flutter (from `Flutter`)
+  - flutter_inappwebview_ios (from `.symlinks/plugins/flutter_inappwebview_ios/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
+  - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
-  - razorpay_flutter (from `.symlinks/plugins/razorpay_flutter/ios`)
+  - razorpay_web (from `.symlinks/plugins/razorpay_web/ios`)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - sqflite_darwin (from `.symlinks/plugins/sqflite_darwin/darwin`)
   - url_launcher_ios (from `.symlinks/plugins/url_launcher_ios/ios`)
@@ -44,10 +70,11 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
+    - InternalCollectionsUtilities
     - PurchasesHybridCommon
-    - razorpay-core-pod
     - razorpay-pod
     - RevenueCat
+    - swift-collections
 
 EXTERNAL SOURCES:
   app_links:
@@ -56,12 +83,16 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/camera_avfoundation/ios"
   Flutter:
     :path: Flutter
+  flutter_inappwebview_ios:
+    :path: ".symlinks/plugins/flutter_inappwebview_ios/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
+  package_info_plus:
+    :path: ".symlinks/plugins/package_info_plus/ios"
   purchases_flutter:
     :path: ".symlinks/plugins/purchases_flutter/ios"
-  razorpay_flutter:
-    :path: ".symlinks/plugins/razorpay_flutter/ios"
+  razorpay_web:
+    :path: ".symlinks/plugins/razorpay_web/ios"
   shared_preferences_foundation:
     :path: ".symlinks/plugins/shared_preferences_foundation/darwin"
   sqflite_darwin:
@@ -75,18 +106,21 @@ SPEC CHECKSUMS:
   app_links: a754cbec3c255bd4bbb4d236ecc06f28cd9a7ce8
   camera_avfoundation: 968a9a5323c79a99c166ad9d7866bfd2047b5a9b
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_inappwebview_ios: 9cde7869829d54b4110df350f3eedd192c5a4aea
   image_picker_ios: e0ece4aa2a75771a7de3fa735d26d90817041326
+  InternalCollectionsUtilities: af3f471602c4a67cbcb0bee0a80f6f55a33ae453
+  package_info_plus: af8e2ca6888548050f16fa2f1938db7b5a5df499
   purchases_flutter: 50a5d9fa83ee5605a8fc653792d667404ca90bce
   PurchasesHybridCommon: 32902b8fad349cf549f096183926ee33af00e36a
-  razorpay-core-pod: 6da5fb4ed280279d665507fdb50e213d793a5fe2
-  razorpay-pod: 4385cf844aa29389313b741e20c72fe668970d49
-  razorpay_flutter: 0e98e4fcaae27ad50e011d85f66d85e0a008754a
+  razorpay-pod: b129f60de5f0d0952bebfb9480a10909d4fd6b6d
+  razorpay_web: 2e7b5b681e617cb9259e0159c200b2db53e123b8
   RevenueCat: c535d3739d51163f6d9d5dbd01c7b5d93b718ff5
   shared_preferences_foundation: 7036424c3d8ec98dfe75ff1667cb0cd531ec82bb
   sqflite_darwin: 20b2a3a3b70e43edae938624ce550a3cbf66a3d0
+  swift-collections: ba248ecaf44ef500b27d5cf94d304218c89892ff
   url_launcher_ios: 7a95fa5b60cc718a708b8f2966718e93db0cef1b
   video_player_avfoundation: dd410b52df6d2466a42d28550e33e4146928280a
 
-PODFILE CHECKSUM: 3c63482e143d1b91d2d2560aee9fb04ecc74ac7e
+PODFILE CHECKSUM: 13cd809e1d78e687121c48af03e14550c8c36865
 
 COCOAPODS: 1.16.2
