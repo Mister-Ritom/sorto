@@ -9,6 +9,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/validators.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import '../../../shared/widgets/sorto_logo.dart';
 import '../auth_provider.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
@@ -111,17 +112,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                     // Logo
                     Row(
                       children: [
-                        Container(
-                          width: 40,
-                          height: 40,
-                          decoration: BoxDecoration(
-                            gradient: AppColors.brandGradientDiagonal,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: const Center(
-                              child: Text('⚡',
-                                  style: TextStyle(fontSize: 20))),
-                        ),
+                        const SortoLogo(size: 40),
                         const SizedBox(width: 10),
                         Text('Sorto',
                             style: AppTypography.headingL(

@@ -10,6 +10,7 @@ import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/animated_coin.dart';
+import '../../../shared/widgets/sorto_logo.dart';
 import '../../../shared/widgets/sorto_button.dart';
 import '../../../features/auth/auth_provider.dart';
 import '../../../core/constants/app_constants.dart';
@@ -126,24 +127,7 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen> {
                 const Spacer(flex: 2),
 
                 // Logo
-                Container(
-                  width: 80,
-                  height: 80,
-                  decoration: BoxDecoration(
-                    gradient: AppColors.brandGradientDiagonal,
-                    borderRadius: BorderRadius.circular(22),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withOpacity(0.5),
-                        blurRadius: 32,
-                        spreadRadius: 4,
-                      ),
-                    ],
-                  ),
-                  child: const Center(
-                    child: Text('⚡', style: TextStyle(fontSize: 40)),
-                  ),
-                )
+                const SortoLogo(size: 80, style: SortoLogoStyle.dark)
                     .animate()
                     .scale(
                       begin: const Offset(0.3, 0.3),

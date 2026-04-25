@@ -6,6 +6,7 @@ import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import '../../../shared/widgets/sorto_logo.dart';
 
 class WalletIntroScreen extends StatelessWidget {
   const WalletIntroScreen({super.key});
@@ -34,7 +35,7 @@ class WalletIntroScreen extends StatelessWidget {
             left: 0,
             right: 0,
             child: Center(
-              child: Text('⚡', style: TextStyle(fontSize: 80))
+              child: const SortoLogo(size: 80, style: SortoLogoStyle.dark)
                   .animate(onPlay: (c) => c.repeat(reverse: true))
                   .scale(
                     begin: const Offset(0.9, 0.9),

@@ -8,6 +8,7 @@ import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../shared/widgets/sorto_logo.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -52,24 +53,7 @@ class _SplashScreenState extends State<SplashScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             // Logo mark
-            Container(
-              width: 100,
-              height: 100,
-              decoration: BoxDecoration(
-                gradient: AppColors.brandGradientDiagonal,
-                borderRadius: BorderRadius.circular(28),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.primary.withValues(alpha: 0.5),
-                    blurRadius: 40,
-                    spreadRadius: 8,
-                  ),
-                ],
-              ),
-              child: const Center(
-                child: Text('⚡', style: TextStyle(fontSize: 52)),
-              ),
-            )
+            const SortoLogo(size: 100, style: SortoLogoStyle.dark)
                 .animate()
                 .scale(
                   begin: const Offset(0.4, 0.4),

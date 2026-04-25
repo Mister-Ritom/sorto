@@ -16,6 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import 'sorto_logo.dart';
 
 class SortoFAB extends StatefulWidget {
   const SortoFAB({
@@ -155,9 +156,10 @@ class _SortoFABState extends State<SortoFAB>
                               ),
                             ],
                           ),
-                          child: const Text(
-                            '⚡',
-                            style: TextStyle(fontSize: 18, height: 1),
+                          child: const SortoLogo(
+                            size: 18,
+                            style: SortoLogoStyle.monochrome,
+                            useContainer: false,
                           ),
                         ),
 
