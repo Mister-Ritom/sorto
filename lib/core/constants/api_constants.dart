@@ -24,6 +24,8 @@ class ApiConstants {
   static const String fnDareSettle = 'dare-settle';
   static const String fnWithdrawalInitiate = 'withdrawal-initiate';
   static const String fnPerformerPostCreate = 'performer-post-create';
+  static const String fnCreateRazorpayOrder = 'create-razorpay-order';
+  static const String fnVerifyRazorpayPayment = 'verify-razorpay-payment';
 
   // Realtime channel templates
   static String dareChannel(String dareId) => 'dare:$dareId';

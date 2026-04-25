@@ -49,7 +49,7 @@ class DareFeedNotifier extends Notifier<DareFeedState> {
   @override
   DareFeedState build() {
     Future.microtask(() => load());
-    return const DareFeedState(isLoading: true);
+    return const DareFeedState();
   }
 
   SupabaseService get _svc => ref.read(supabaseServiceProvider);

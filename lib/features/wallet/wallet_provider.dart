@@ -1,8 +1,11 @@
 // lib/features/wallet/wallet_provider.dart
+import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/supabase_service.dart';
 import '../../shared/models/wallet.dart';
 import '../../shared/models/transaction.dart';
+
+const _tag = 'TransactionProvider';
 
 // ─── WALLET STREAM ────────────────────────────────────────────────────────────
 final walletStreamProvider = StreamProvider<Wallet?>((ref) {
@@ -47,7 +50,9 @@ class TransactionState {
 class TransactionNotifier extends Notifier<TransactionState> {
   @override
   TransactionState build() {
-    Future.microtask(() => load());
+    // We must use microtask to avoid updating state during the build phase.
+    // refresh: true ensures we bypass the loading check for this initial call.
+    Future.microtask(() => load(refresh: true));
     return const TransactionState(isLoading: true);
   }
 
@@ -77,7 +82,8 @@ class TransactionNotifier extends Notifier<TransactionState> {
         hasMore: txns.length == 30,
         offset: offset + txns.length,
       );
-    } catch (_) {
+    } catch (e, st) {
+      dev.log('Failed to load transactions', name: _tag, error: e, stackTrace: st);
       state = state.copyWith(isLoading: false);
     }
   }
