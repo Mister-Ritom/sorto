@@ -107,7 +107,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
   final authNotifier = ref.watch(authStateListenableProvider);
 
   return GoRouter(
-    debugLogDiagnostics: true,
+    debugLogDiagnostics: false,
     refreshListenable: authNotifier,
     initialLocation: Routes.splash,
 
