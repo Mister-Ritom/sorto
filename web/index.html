@@ -22,18 +22,56 @@
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="sorto">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Sorto">
+  <meta name="theme-color" content="#080808">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>sorto</title>
+  <title>Sorto</title>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  <script>
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent the mini-infobar from appearing on mobile
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+      // Update UI notify the user they can install the PWA
+      console.log('beforeinstallprompt event fired');
+      if (window.onBeforeInstallPrompt) {
+        window.onBeforeInstallPrompt();
+      }
+    });
+
+    window.addEventListener('appinstalled', (evt) => {
+      console.log('App was installed');
+      deferredPrompt = null;
+    });
+
+    window.installPWA = async () => {
+      if (!deferredPrompt) {
+        return false;
+      }
+      // Show the install prompt
+      deferredPrompt.prompt();
+      // Wait for the user to respond to the prompt
+      const { outcome } = await deferredPrompt.userChoice;
+      // We've used the prompt, and can't use it again, throw it away
+      deferredPrompt = null;
+      return outcome === 'accepted';
+    };
+
+    window.isPWAInstallable = () => {
+      return deferredPrompt !== undefined;
+    };
+  </script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

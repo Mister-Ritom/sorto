@@ -12,6 +12,7 @@ import '../../../shared/models/dare.dart';
 import '../../../shared/models/performer_post.dart';
 import '../../../shared/widgets/dare_mode_badge.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class ProfileHeader extends ConsumerWidget {
   const ProfileHeader({super.key, required this.profile, required this.isOwn, this.onEditTap});
@@ -36,7 +37,7 @@ class ProfileHeader extends ConsumerWidget {
               shape: BoxShape.circle,
               boxShadow: [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.3),
+                  color: AppColors.primary.withOpacityNew(0.3),
                   blurRadius: 16,
                   spreadRadius: 2,
                 ),
@@ -221,7 +222,7 @@ class DareMiniCard extends StatelessWidget {
                   Text(Formatters.coins(dare.performerShare),
                       style: AppTypography.labelL(color: AppColors.success)),
                   Text('earned',
-                      style: AppTypography.bodyS(color: AppColors.success.withOpacity(0.7))),
+                      style: AppTypography.bodyS(color: AppColors.success.withOpacityNew(0.7))),
                 ],
               )
             else
@@ -231,7 +232,7 @@ class DareMiniCard extends StatelessWidget {
                   Text(Formatters.coins(dare.bountyAmount),
                       style: AppTypography.labelL(color: AppColors.coinGold)),
                   Text('bounty',
-                      style: AppTypography.bodyS(color: AppColors.coinGold.withOpacity(0.7))),
+                      style: AppTypography.bodyS(color: AppColors.coinGold.withOpacityNew(0.7))),
                 ],
               ),
           ],
@@ -284,7 +285,7 @@ class PostMiniCard extends StatelessWidget {
                 Text(Formatters.coins(post.askingPrice),
                     style: AppTypography.labelL(color: AppColors.coinGold)),
                 Text('asking',
-                    style: AppTypography.bodyS(color: AppColors.coinGold.withOpacity(0.7))),
+                    style: AppTypography.bodyS(color: AppColors.coinGold.withOpacityNew(0.7))),
               ],
             ),
           ],

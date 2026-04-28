@@ -9,9 +9,9 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../core/utils/validators.dart';
-import '../../../shared/widgets/coin_chip.dart';
 import '../../../shared/widgets/sorto_button.dart';
 import '../performer_posts_provider.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class CreatePerformerPostScreen extends ConsumerStatefulWidget {
   const CreatePerformerPostScreen({super.key});
@@ -49,7 +49,9 @@ class _CreatePerformerPostScreenState
     }
     HapticFeedback.mediumImpact();
 
-    final postId = await ref.read(createPostProvider.notifier).create(
+    final postId = await ref
+        .read(createPostProvider.notifier)
+        .create(
           title: _titleCtrl.text.trim(),
           description: _descCtrl.text.trim(),
           category: _selectedCategory!,
@@ -66,8 +68,9 @@ class _CreatePerformerPostScreenState
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Failed to create post'),
-            backgroundColor: AppColors.error),
+          content: Text('Failed to create post'),
+          backgroundColor: AppColors.error,
+        ),
       );
     }
   }
@@ -101,9 +104,10 @@ class _CreatePerformerPostScreenState
               Text(
                 'Posters fund your post. You complete the dare and earn coins.',
                 style: AppTypography.bodyM(
-                    color: isDark
-                        ? AppColors.darkTextSecondary
-                        : AppColors.lightTextSecondary),
+                  color: isDark
+                      ? AppColors.darkTextSecondary
+                      : AppColors.lightTextSecondary,
+                ),
               ).animate(delay: 100.ms).fadeIn(duration: 400.ms),
               const SizedBox(height: 28),
 
@@ -129,15 +133,18 @@ class _CreatePerformerPostScreenState
                 validator: Validators.dareDescription,
                 decoration: const InputDecoration(
                   labelText: 'Full details',
-                  hintText: 'Describe exactly what you\'ll do and any conditions...',
+                  hintText:
+                      'Describe exactly what you\'ll do and any conditions...',
                   alignLabelWithHint: true,
                 ),
               ).animate(delay: 300.ms).fadeIn(duration: 400.ms),
               const SizedBox(height: 24),
 
               // Category
-              Text('Category', style: AppTypography.labelL())
-                  .animate(delay: 400.ms).fadeIn(),
+              Text(
+                'Category',
+                style: AppTypography.labelL(),
+              ).animate(delay: 400.ms).fadeIn(),
               const SizedBox(height: 10),
               Wrap(
                 spacing: 8,
@@ -153,10 +160,12 @@ class _CreatePerformerPostScreenState
                     child: AnimatedContainer(
                       duration: const Duration(milliseconds: 200),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: sel
-                            ? AppColors.primary.withOpacity(0.15)
+                            ? AppColors.primary.withOpacityNew(0.15)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(100),
                         border: Border.all(
@@ -168,7 +177,8 @@ class _CreatePerformerPostScreenState
                       child: Text(
                         '$emoji $cat',
                         style: AppTypography.labelM(
-                            color: sel ? AppColors.primary : null),
+                          color: sel ? AppColors.primary : null,
+                        ),
                       ),
                     ),
                   );
@@ -178,8 +188,10 @@ class _CreatePerformerPostScreenState
               const SizedBox(height: 24),
 
               // Asking price
-               Text('Asking price (SC)', style: AppTypography.labelL())
-                  .animate(delay: 500.ms).fadeIn(),
+              Text(
+                'Asking price (SC)',
+                style: AppTypography.labelL(),
+              ).animate(delay: 500.ms).fadeIn(),
               const SizedBox(height: 16),
               Center(
                 child: Row(
@@ -237,56 +249,66 @@ class _CreatePerformerPostScreenState
               const SizedBox(height: 24),
 
               // Deadline
-              Text('Deadline', style: AppTypography.labelL())
-                  .animate(delay: 600.ms).fadeIn(),
+              Text(
+                'Deadline',
+                style: AppTypography.labelL(),
+              ).animate(delay: 600.ms).fadeIn(),
               const SizedBox(height: 10),
               Wrap(
                 spacing: 8,
                 runSpacing: 8,
-                children: [
-                  ('1 day', const Duration(days: 1)),
-                  ('3 days', const Duration(days: 3)),
-                  ('1 week', const Duration(days: 7)),
-                  ('2 weeks', const Duration(days: 14)),
-                ].map((opt) {
-                  final (label, dur) = opt;
-                  final dt = DateTime.now().add(dur);
-                  final sel = _deadline != null &&
-                      (_deadline!.difference(dt).inHours.abs() < 2);
-                  return GestureDetector(
-                    onTap: () => setState(() => _deadline = dt),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
-                      decoration: BoxDecoration(
-                        color: sel
-                            ? AppColors.primary.withOpacity(0.15)
-                            : Colors.transparent,
-                        borderRadius: BorderRadius.circular(100),
-                        border: Border.all(
-                          color: sel
-                              ? AppColors.primary
-                              : Theme.of(context).dividerColor,
+                children:
+                    [
+                      ('1 day', const Duration(days: 1)),
+                      ('3 days', const Duration(days: 3)),
+                      ('1 week', const Duration(days: 7)),
+                      ('2 weeks', const Duration(days: 14)),
+                    ].map((opt) {
+                      final (label, dur) = opt;
+                      final dt = DateTime.now().add(dur);
+                      final sel =
+                          _deadline != null &&
+                          (_deadline!.difference(dt).inHours.abs() < 2);
+                      return GestureDetector(
+                        onTap: () => setState(() => _deadline = dt),
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 14,
+                            vertical: 8,
+                          ),
+                          decoration: BoxDecoration(
+                            color: sel
+                                ? AppColors.primary.withOpacityNew(0.15)
+                                : Colors.transparent,
+                            borderRadius: BorderRadius.circular(100),
+                            border: Border.all(
+                              color: sel
+                                  ? AppColors.primary
+                                  : Theme.of(context).dividerColor,
+                            ),
+                          ),
+                          child: Text(
+                            label,
+                            style: AppTypography.labelM(
+                              color: sel ? AppColors.primary : null,
+                            ),
+                          ),
                         ),
-                      ),
-                      child: Text(
-                        label,
-                        style: AppTypography.labelM(
-                            color: sel ? AppColors.primary : null),
-                      ),
-                    ),
-                  );
-                }).toList(),
+                      );
+                    }).toList(),
               ).animate(delay: 650.ms).fadeIn(duration: 400.ms),
 
               const SizedBox(height: 32),
 
               SortoButton(
-                label: 'Publish Post',
-                isLoading: isLoading,
-                onPressed: isLoading ? null : _submit,
-              ).animate(delay: 700.ms).fadeIn(duration: 400.ms).slideY(begin: 0.3, end: 0),
+                    label: 'Publish Post',
+                    isLoading: isLoading,
+                    onPressed: isLoading ? null : _submit,
+                  )
+                  .animate(delay: 700.ms)
+                  .fadeIn(duration: 400.ms)
+                  .slideY(begin: 0.3, end: 0),
 
               const SizedBox(height: 24),
             ],

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../shared/models/dare.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class DareModeBadge extends StatelessWidget {
   const DareModeBadge({
@@ -26,9 +27,9 @@ class DareModeBadge extends StatelessWidget {
       return Container(
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.15),
+          color: color.withOpacityNew(0.15),
           borderRadius: BorderRadius.circular(100),
-          border: Border.all(color: color.withOpacity(0.4), width: 1),
+          border: Border.all(color: color.withOpacityNew(0.4), width: 1),
         ),
         child: Text(
           label,
@@ -40,9 +41,9 @@ class DareModeBadge extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.15),
+        color: color.withOpacityNew(0.15),
         borderRadius: BorderRadius.circular(100),
-        border: Border.all(color: color.withOpacity(0.4), width: 1),
+        border: Border.all(color: color.withOpacityNew(0.4), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -85,9 +86,9 @@ class DareStatusBadge extends StatelessWidget {
       padding: EdgeInsets.symmetric(
           horizontal: compact ? 7 : 10, vertical: compact ? 3 : 5),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.12),
+        color: color.withOpacityNew(0.12),
         borderRadius: BorderRadius.circular(100),
-        border: Border.all(color: color.withOpacity(0.35), width: 1),
+        border: Border.all(color: color.withOpacityNew(0.35), width: 1),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,

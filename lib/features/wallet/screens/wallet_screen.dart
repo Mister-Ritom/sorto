@@ -1,12 +1,9 @@
-// lib/features/wallet/screens/wallet_screen.dart
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:developer' as dev;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:purchases_flutter/purchases_flutter.dart';
 import '../../../core/constants/coin_tiers.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/services/payment_service.dart';
@@ -15,10 +12,10 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../shared/models/transaction.dart';
 import '../../../shared/widgets/coin_chip.dart';
-import '../../../shared/widgets/sorto_button.dart';
 import '../../../shared/widgets/skeleton_loader.dart';
 import '../payment_provider.dart';
 import '../wallet_provider.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
@@ -27,7 +24,6 @@ class WalletScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final walletAsync = ref.watch(walletStreamProvider);
     final txAsync = ref.watch(transactionAsyncProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
@@ -53,7 +49,10 @@ class WalletScreen extends ConsumerWidget {
                   padding: EdgeInsets.all(20),
                   child: SkeletonBox(width: double.infinity, height: 200),
                 ),
-                error: (e, _) => const SizedBox.shrink(),
+                error: (e, st) {
+                  dev.log('Error loading wallet balance', error: e, stackTrace: st, name: 'WalletScreen');
+                  return const SizedBox.shrink();
+                },
                 data: (wallet) => _BalanceCard(
                   spendable: wallet?.coinBalance ?? 0,
                   escrowed: wallet?.escrowedBalance ?? 0,
@@ -65,9 +64,7 @@ class WalletScreen extends ConsumerWidget {
             ),
 
             if (kDebugMode)
-              const SliverToBoxAdapter(
-                child: _DebugPaymentTools(),
-              ),
+              const SliverToBoxAdapter(child: _DebugPaymentTools()),
 
             // ── Filter chips ─────────────────────────────────────────────
             SliverToBoxAdapter(
@@ -268,7 +265,7 @@ class _CoinPickerSheet extends ConsumerWidget {
                 controller: scrollCtrl,
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
                 itemCount: kCoinTiers.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 10),
+                separatorBuilder: (_, _) => const SizedBox(height: 10),
                 itemBuilder: (_, i) {
                   final tier = kCoinTiers[i];
 
@@ -285,18 +282,24 @@ class _CoinPickerSheet extends ConsumerWidget {
                               (p) => p.identifier == tier.revenueCatId,
                             );
                         priceLabel = pkg.storeProduct.priceString;
-                      } catch (_) {}
+                      } catch (e, st) {
+                        dev.log('Error finding RevenueCat package for tier ${tier.revenueCatId}',
+                            error: e, stackTrace: st, name: 'WalletScreen');
+                      }
                     }
                   }
 
                   // If still using fallback label, try to get the accurate one from the backend
                   if (priceLabel == tier.razorpayPriceLabel) {
-                    final accuratePricesAsync = widgetRef.watch(razorpayPricesProvider);
-                    
+                    final accuratePricesAsync = widgetRef.watch(
+                      razorpayPricesProvider,
+                    );
+
                     priceLabel = accuratePricesAsync.when(
-                      data: (prices) => prices[tier.coins] ?? tier.razorpayPriceLabel,
+                      data: (prices) =>
+                          prices[tier.coins] ?? tier.razorpayPriceLabel,
                       loading: () => 'Loading...',
-                      error: (_, __) => tier.razorpayPriceLabel,
+                      error: (_, _) => tier.razorpayPriceLabel,
                     );
                   }
 
@@ -321,7 +324,9 @@ class _CoinPickerSheet extends ConsumerWidget {
                           );
                           // Refresh everything
                           widgetRef.invalidate(walletStreamProvider);
-                          widgetRef.read(transactionProvider.notifier).load(refresh: true);
+                          widgetRef
+                              .read(transactionProvider.notifier)
+                              .load(refresh: true);
                         case PaymentCancelled():
                           break;
                         case PaymentFailed(:final reason):
@@ -437,7 +442,7 @@ class _BalanceCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: AppColors.primary.withOpacity(0.4),
+            color: AppColors.primary.withOpacityNew(0.4),
             blurRadius: 24,
             offset: const Offset(0, 8),
           ),
@@ -455,7 +460,7 @@ class _BalanceCard extends StatelessWidget {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: Colors.white.withOpacity(0.08),
+                  color: Colors.white.withOpacityNew(0.08),
                   shape: BoxShape.circle,
                 ),
               ),
@@ -521,7 +526,7 @@ class _BalanceCard extends StatelessWidget {
                           ),
                           label: const Text('Withdraw'),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white.withOpacity(0.2),
+                            backgroundColor: Colors.white.withOpacityNew(0.2),
                             foregroundColor: Colors.white,
                             elevation: 0,
                             shape: RoundedRectangleBorder(
@@ -601,7 +606,7 @@ class _TransactionRow extends StatelessWidget {
                 width: 42,
                 height: 42,
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.12),
+                  color: color.withOpacityNew(0.12),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Center(
@@ -655,9 +660,9 @@ class _DebugPaymentTools extends ConsumerWidget {
       margin: const EdgeInsets.all(16),
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.orange.withOpacity(0.1),
+        color: Colors.orange.withOpacityNew(0.1),
         borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: Colors.orange.withOpacity(0.3)),
+        border: Border.all(color: Colors.orange.withOpacityNew(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -666,7 +671,10 @@ class _DebugPaymentTools extends ConsumerWidget {
             children: [
               const Icon(Icons.bug_report, color: Colors.orange, size: 16),
               const SizedBox(width: 8),
-              Text('DEBUG OVERRIDES', style: AppTypography.labelS(color: Colors.orange)),
+              Text(
+                'DEBUG OVERRIDES',
+                style: AppTypography.labelS(color: Colors.orange),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -681,14 +689,27 @@ class _DebugPaymentTools extends ConsumerWidget {
                       value: country,
                       isExpanded: true,
                       items: const [
-                        DropdownMenuItem(value: null, child: Text('System Default')),
-                        DropdownMenuItem(value: 'IN', child: Text('India (INR)')),
+                        DropdownMenuItem(
+                          value: null,
+                          child: Text('System Default'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'IN',
+                          child: Text('India (INR)'),
+                        ),
                         DropdownMenuItem(value: 'US', child: Text('USA (USD)')),
                         DropdownMenuItem(value: 'GB', child: Text('UK (GBP)')),
-                        DropdownMenuItem(value: 'EU', child: Text('Europe (EUR)')),
+                        DropdownMenuItem(
+                          value: 'EU',
+                          child: Text('Europe (EUR)'),
+                        ),
                         DropdownMenuItem(value: 'AE', child: Text('UAE (AED)')),
                       ],
-                      onChanged: (val) => ref.read(debugCountryOverrideProvider.notifier).state = val,
+                      onChanged: (val) =>
+                          ref
+                                  .read(debugCountryOverrideProvider.notifier)
+                                  .state =
+                              val,
                     ),
                   ],
                 ),
@@ -703,11 +724,24 @@ class _DebugPaymentTools extends ConsumerWidget {
                       value: method,
                       isExpanded: true,
                       items: const [
-                        DropdownMenuItem(value: PaymentMethodOverride.none, child: Text('Default Flow')),
-                        DropdownMenuItem(value: PaymentMethodOverride.razorpay, child: Text('Force Razorpay')),
-                        DropdownMenuItem(value: PaymentMethodOverride.revenueCat, child: Text('Force Store')),
+                        DropdownMenuItem(
+                          value: PaymentMethodOverride.none,
+                          child: Text('Default Flow'),
+                        ),
+                        DropdownMenuItem(
+                          value: PaymentMethodOverride.razorpay,
+                          child: Text('Force Razorpay'),
+                        ),
+                        DropdownMenuItem(
+                          value: PaymentMethodOverride.revenueCat,
+                          child: Text('Force Store'),
+                        ),
                       ],
-                      onChanged: (val) => ref.read(debugPaymentOverrideProvider.notifier).state = val!,
+                      onChanged: (val) =>
+                          ref
+                                  .read(debugPaymentOverrideProvider.notifier)
+                                  .state =
+                              val!,
                     ),
                   ],
                 ),

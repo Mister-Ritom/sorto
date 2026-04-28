@@ -1,5 +1,6 @@
 // lib/core/theme/app_colors.dart
 import 'package:flutter/material.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class AppColors {
   AppColors._();
@@ -92,10 +93,10 @@ class AppColors {
   );
 
   // ─── GLASS ───────────────────────────────────────────────────────────────
-  static Color glassDark = Colors.white.withOpacity(0.05);
-  static Color glassLight = Colors.white.withOpacity(0.60);
-  static Color glassBorderDark = Colors.white.withOpacity(0.10);
-  static Color glassBorderLight = Colors.white.withOpacity(0.30);
+  static Color glassDark = Colors.white.withOpacityNew(0.05);
+  static Color glassLight = Colors.white.withOpacityNew(0.60);
+  static Color glassBorderDark = Colors.white.withOpacityNew(0.10);
+  static Color glassBorderLight = Colors.white.withOpacityNew(0.30);
 
   // ─── COLORSCHEME FACTORIES ───────────────────────────────────────────────
   static ColorScheme darkColorScheme() => ColorScheme(

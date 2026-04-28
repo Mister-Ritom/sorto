@@ -13,7 +13,9 @@ import '../../../shared/widgets/coin_chip.dart';
 import '../../../shared/widgets/dare_mode_badge.dart';
 import '../../../shared/widgets/sorto_button.dart';
 import '../../../features/auth/auth_provider.dart';
+import 'package:sorto/core/services/pwa_service.dart';
 import '../dares_provider.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class DareDetailScreen extends ConsumerWidget {
   const DareDetailScreen({super.key, required this.dareId});
@@ -46,6 +48,16 @@ class DareDetailScreen extends ConsumerWidget {
 
           final isMyDare = userAsync.value?.id == dare.posterId;
           final isPerformer = userAsync.value?.id == dare.performerId;
+
+          // Trigger PWA banner if dare is won
+          if (dare.status == DareStatus.completed && isPerformer) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              ref.read(pwaServiceProvider).showInstallBanner(
+                    context,
+                    bannerContext: PwaBannerContext.firstWin,
+                  );
+            });
+          }
 
           return CustomScrollView(
             physics: const BouncingScrollPhysics(),
@@ -331,9 +343,9 @@ class _SubmissionInfo extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.primary.withOpacity(0.08),
+        color: AppColors.primary.withOpacityNew(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+        border: Border.all(color: AppColors.primary.withOpacityNew(0.2)),
       ),
       child: Row(
         children: [
@@ -364,12 +376,12 @@ class _DeadlineCard extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: isUrgent
-            ? AppColors.error.withOpacity(0.08)
+            ? AppColors.error.withOpacityNew(0.08)
             : AppColors.darkCard,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
           color: isUrgent
-              ? AppColors.error.withOpacity(0.3)
+              ? AppColors.error.withOpacityNew(0.3)
               : AppColors.darkCardBorder,
         ),
       ),

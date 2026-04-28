@@ -1,4 +1,5 @@
 // lib/features/dares/screens/submit_proof_screen.dart
+import 'dart:developer' as dev;
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'dart:io' as io;
 import 'package:flutter/material.dart';
@@ -13,6 +14,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/services/supabase_service.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import 'package:sorto/core/services/pwa_service.dart';
 import '../dares_provider.dart';
 
 class SubmitProofScreen extends ConsumerStatefulWidget {
@@ -120,6 +122,11 @@ class _SubmitProofScreenState extends ConsumerState<SubmitProofScreen> {
                   onPressed: () {
                     Navigator.pop(context);
                     context.go(Routes.dareDetailPath(widget.dareId));
+                    // Trigger PWA banner for first performance
+                    ref.read(pwaServiceProvider).showInstallBanner(
+                          context,
+                          bannerContext: PwaBannerContext.firstPerformance,
+                        );
                   },
                 ),
               ],
@@ -134,10 +141,14 @@ class _SubmitProofScreenState extends ConsumerState<SubmitProofScreen> {
           ),
         );
       }
-    } catch (e) {
+    } catch (e, st) {
+      dev.log('Error submitting proof', error: e, stackTrace: st, name: 'SubmitProofScreen');
       setState(() { _uploading = false; });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: AppColors.error),
+        const SnackBar(
+          content: Text('Something went wrong during upload. Please try again.'), 
+          backgroundColor: AppColors.error
+        ),
       );
     }
   }

@@ -2,6 +2,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 /// Particle burst of coins. Trigger via [AnimatedCoinBurstController].
 class AnimatedCoinBurst extends StatefulWidget {
@@ -98,7 +99,7 @@ class _AnimatedCoinBurstState extends State<AnimatedCoinBurst>
                     color: AppColors.coinGold,
                     shadows: [
                       Shadow(
-                        color: AppColors.coinGold.withOpacity(0.8),
+                        color: AppColors.coinGold.withOpacityNew(0.8),
                         blurRadius: 8,
                       ),
                     ],

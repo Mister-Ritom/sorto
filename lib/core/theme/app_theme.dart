@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'app_colors.dart';
 import 'app_typography.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class AppTheme {
   AppTheme._();
@@ -110,8 +111,8 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: isDark
-            ? Colors.white.withOpacity(0.05)
-            : Colors.black.withOpacity(0.04),
+            ? Colors.white.withOpacityNew(0.05)
+            : Colors.black.withOpacityNew(0.04),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
           borderSide: BorderSide(color: border),
@@ -144,9 +145,9 @@ class AppTheme {
       // ─── CHIP ─────────────────────────────────────────────────────────────
       chipTheme: ChipThemeData(
         backgroundColor: isDark
-            ? Colors.white.withOpacity(0.07)
-            : Colors.black.withOpacity(0.05),
-        selectedColor: AppColors.primary.withOpacity(0.2),
+            ? Colors.white.withOpacityNew(0.07)
+            : Colors.black.withOpacityNew(0.05),
+        selectedColor: AppColors.primary.withOpacityNew(0.2),
         labelStyle: AppTypography.labelM(color: textPrimary),
         side: BorderSide(color: border),
         shape: RoundedRectangleBorder(

@@ -10,6 +10,9 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../../features/auth/auth_provider.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import '../../../core/services/pwa_service.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -29,7 +32,9 @@ class SettingsScreen extends ConsumerWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
         children: [
           // ─── ACCOUNT SECTION ───────────────────────────────────────────────
-          _SectionHeader(title: 'Account').animate().fadeIn(delay: 50.ms).slideX(begin: -0.1, end: 0),
+          _SectionHeader(
+            title: 'Account',
+          ).animate().fadeIn(delay: 50.ms).slideX(begin: -0.1, end: 0),
           const SizedBox(height: 12),
           profileAsync.when(
             data: (profile) => _ProfileTile(
@@ -41,12 +46,14 @@ class SettingsScreen extends ConsumerWidget {
               },
             ).animate().scale(curve: Curves.elasticOut, duration: 600.ms),
             loading: () => const _LoadingTile(),
-            error: (_, __) => const _ErrorTile(),
+            error: (_, _) => const _ErrorTile(),
           ),
           const SizedBox(height: 32),
 
           // ─── PREFERENCES SECTION ───────────────────────────────────────────
-          _SectionHeader(title: 'Preferences').animate().fadeIn(delay: 150.ms).slideX(begin: -0.1, end: 0),
+          _SectionHeader(
+            title: 'Preferences',
+          ).animate().fadeIn(delay: 150.ms).slideX(begin: -0.1, end: 0),
           const SizedBox(height: 12),
           _SettingsTile(
             icon: Icons.palette_rounded,
@@ -65,7 +72,9 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 32),
 
           // ─── SUPPORT SECTION ───────────────────────────────────────────────
-          _SectionHeader(title: 'Support').animate().fadeIn(delay: 350.ms).slideX(begin: -0.1, end: 0),
+          _SectionHeader(
+            title: 'Support',
+          ).animate().fadeIn(delay: 350.ms).slideX(begin: -0.1, end: 0),
           const SizedBox(height: 12),
           _SettingsTile(
             icon: Icons.help_outline_rounded,
@@ -82,7 +91,44 @@ class SettingsScreen extends ConsumerWidget {
             title: 'Privacy Policy',
             onTap: () {},
           ).animate(delay: 500.ms).fadeIn().slideX(begin: 0.1, end: 0),
-          const SizedBox(height: 48),
+          const SizedBox(height: 32),
+
+          // ─── APP SECTION (PWA) ─────────────────────────────────────────────
+          if (kIsWeb) ...[
+            StreamBuilder<bool>(
+              stream: ref.watch(pwaServiceProvider).installableStream,
+              initialData: ref.watch(pwaServiceProvider).isInstallable,
+              builder: (context, snapshot) {
+                if (snapshot.data == true) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _SectionHeader(title: 'App')
+                          .animate()
+                          .fadeIn(delay: 550.ms)
+                          .slideX(begin: -0.1, end: 0),
+                      const SizedBox(height: 12),
+                      _SettingsTile(
+                            icon: Icons.install_mobile_rounded,
+                            title: 'Install App',
+                            subtitle: 'Add Sorto to your home screen',
+                            onTap: () {
+                              ref
+                                  .read(pwaServiceProvider)
+                                  .showInstallBanner(context, force: true);
+                            },
+                          )
+                          .animate(delay: 600.ms)
+                          .fadeIn()
+                          .slideX(begin: 0.1, end: 0),
+                      const SizedBox(height: 32),
+                    ],
+                  );
+                }
+                return const SizedBox.shrink();
+              },
+            ),
+          ],
 
           // ─── DANGER ZONE ───────────────────────────────────────────────────
           SortoButton(
@@ -106,7 +152,9 @@ class SettingsScreen extends ConsumerWidget {
             child: Text(
               'Sorto v1.0.0',
               style: AppTypography.bodyS(
-                color: isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted,
+                color: isDark
+                    ? AppColors.darkTextMuted
+                    : AppColors.lightTextMuted,
               ),
             ),
           ),
@@ -144,7 +192,9 @@ class SettingsScreen extends ConsumerWidget {
                     title: 'System Default',
                     isSelected: currentMode == ThemeMode.system,
                     onTap: () {
-                      ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.system);
+                      ref
+                          .read(themeModeProvider.notifier)
+                          .setThemeMode(ThemeMode.system);
                       Navigator.pop(ctx);
                     },
                   ).animate().fadeIn(delay: 100.ms).slideY(begin: 0.1, end: 0),
@@ -152,7 +202,9 @@ class SettingsScreen extends ConsumerWidget {
                     title: 'Light Mode',
                     isSelected: currentMode == ThemeMode.light,
                     onTap: () {
-                      ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.light);
+                      ref
+                          .read(themeModeProvider.notifier)
+                          .setThemeMode(ThemeMode.light);
                       Navigator.pop(ctx);
                     },
                   ).animate().fadeIn(delay: 150.ms).slideY(begin: 0.1, end: 0),
@@ -160,7 +212,9 @@ class SettingsScreen extends ConsumerWidget {
                     title: 'Dark Mode',
                     isSelected: currentMode == ThemeMode.dark,
                     onTap: () {
-                      ref.read(themeModeProvider.notifier).setThemeMode(ThemeMode.dark);
+                      ref
+                          .read(themeModeProvider.notifier)
+                          .setThemeMode(ThemeMode.dark);
                       Navigator.pop(ctx);
                     },
                   ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.1, end: 0),
@@ -191,7 +245,10 @@ class SettingsScreen extends ConsumerWidget {
               await ref.read(authNotifierProvider.notifier).signOut();
               if (context.mounted) context.go(Routes.signIn);
             },
-            child: const Text('Logout', style: TextStyle(color: AppColors.error)),
+            child: const Text(
+              'Logout',
+              style: TextStyle(color: AppColors.error),
+            ),
           ),
         ],
       ),
@@ -202,7 +259,10 @@ class SettingsScreen extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Delete Account?', style: TextStyle(color: AppColors.error)),
+        title: const Text(
+          'Delete Account?',
+          style: TextStyle(color: AppColors.error),
+        ),
         content: const Text(
           'This action is permanent. All your data, wallet balance, and history will be lost forever.',
         ),
@@ -216,7 +276,10 @@ class SettingsScreen extends ConsumerWidget {
               // TODO: Implement account deletion logic
               Navigator.pop(ctx);
             },
-            child: const Text('Delete', style: TextStyle(color: AppColors.error)),
+            child: const Text(
+              'Delete',
+              style: TextStyle(color: AppColors.error),
+            ),
           ),
         ],
       ),
@@ -270,8 +333,10 @@ class _ProfileTile extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 28,
-            backgroundColor: AppColors.primary.withOpacity(0.1),
-            backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl!) : null,
+            backgroundColor: AppColors.primary.withOpacityNew(0.1),
+            backgroundImage: avatarUrl != null
+                ? NetworkImage(avatarUrl!)
+                : null,
             child: avatarUrl == null
                 ? const Icon(Icons.person_rounded, color: AppColors.primary)
                 : null,
@@ -285,7 +350,9 @@ class _ProfileTile extends StatelessWidget {
                 Text(
                   username,
                   style: AppTypography.bodyM(
-                    color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                    color: isDark
+                        ? AppColors.darkTextSecondary
+                        : AppColors.lightTextSecondary,
                   ),
                 ),
               ],
@@ -295,7 +362,9 @@ class _ProfileTile extends StatelessWidget {
             onPressed: onTap,
             icon: const Icon(Icons.edit_rounded, size: 20),
             style: IconButton.styleFrom(
-              backgroundColor: isDark ? Colors.white.withOpacity(0.05) : Colors.black.withOpacity(0.05),
+              backgroundColor: isDark
+                  ? Colors.white.withOpacityNew(0.05)
+                  : Colors.black.withOpacityNew(0.05),
             ),
           ),
         ],
@@ -336,7 +405,9 @@ class _SettingsTile extends StatelessWidget {
           ? Text(
               subtitle!,
               style: AppTypography.bodyS(
-                color: isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary,
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.lightTextSecondary,
               ),
             )
           : null,
@@ -376,7 +447,7 @@ class _LoadingTile extends StatelessWidget {
     return Container(
       height: 80,
       decoration: BoxDecoration(
-        color: AppColors.darkCard.withOpacity(0.1),
+        color: AppColors.darkCard.withOpacityNew(0.1),
         borderRadius: BorderRadius.circular(20),
       ),
       child: const Center(child: CircularProgressIndicator(strokeWidth: 2)),

@@ -1,10 +1,11 @@
 // lib/features/wallet/payment_provider.dart
+import 'dart:developer' as dev;
 //
 // Riverpod glue between the UI and PaymentService.
 // RevenueCat is only initialised on Android/iOS — never on Web/Desktop.
 // The UI watches revenueCatOfferingsProvider to show live store prices.
 
-import 'package:flutter/foundation.dart' show kIsWeb, kDebugMode;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart' show BuildContext, WidgetsBinding;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/legacy.dart';
@@ -45,7 +46,9 @@ final revenueCatOfferingsProvider = FutureProvider<Offerings?>((ref) async {
 
     await Purchases.configure(PurchasesConfiguration(rcKey));
     return await Purchases.getOfferings();
-  } catch (_) {
+  } catch (e, st) {
+    dev.log('RevenueCat initialization or offering fetch failed', 
+        error: e, stackTrace: st, name: 'PaymentProvider');
     return null; // SDK unavailable or error — fall back to Razorpay
   }
 });
@@ -80,7 +83,9 @@ final razorpayPricesProvider = FutureProvider<Map<int, String>>((ref) async {
       }
     }
     return priceMap;
-  } catch (e) {
+  } catch (e, st) {
+    dev.log('Failed to fetch Razorpay prices from backend', 
+        error: e, stackTrace: st, name: 'PaymentProvider');
     return {};
   }
 });

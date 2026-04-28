@@ -11,6 +11,7 @@ import '../../../core/utils/validators.dart';
 import '../../../shared/widgets/sorto_button.dart';
 import '../../../shared/widgets/sorto_logo.dart';
 import '../auth_provider.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -91,7 +92,7 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.primary.withOpacity(0.2),
+                    AppColors.primary.withOpacityNew(0.2),
                     Colors.transparent,
                   ],
                 ),

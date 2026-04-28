@@ -8,12 +8,10 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/models/performer_post.dart';
 import '../../../shared/widgets/coin_chip.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class CreatorBentoCard extends StatefulWidget {
-  const CreatorBentoCard({
-    super.key,
-    required this.post,
-  });
+  const CreatorBentoCard({super.key, required this.post});
 
   final PerformerPost post;
 
@@ -34,8 +32,10 @@ class _CreatorBentoCardState extends State<CreatorBentoCard>
       duration: const Duration(milliseconds: 100),
       reverseDuration: const Duration(milliseconds: 200),
     );
-    _scale = Tween<double>(begin: 1.0, end: 0.95)
-        .animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: 0.95,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
   @override
@@ -49,7 +49,8 @@ class _CreatorBentoCardState extends State<CreatorBentoCard>
     final post = widget.post;
     return AnimatedBuilder(
       animation: _scale,
-      builder: (ctx, child) => Transform.scale(scale: _scale.value, child: child),
+      builder: (ctx, child) =>
+          Transform.scale(scale: _scale.value, child: child),
       child: GestureDetector(
         onTapDown: (_) => _ctrl.forward(),
         onTapUp: (_) {
@@ -68,7 +69,8 @@ class _CreatorBentoCardState extends State<CreatorBentoCard>
                 CachedNetworkImage(
                   imageUrl: post.performerAvatarUrl!,
                   fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => _GradientBg(username: post.performerUsername ?? '?'),
+                  errorWidget: (_, _, _) =>
+                      _GradientBg(username: post.performerUsername ?? '?'),
                 )
               else
                 _GradientBg(username: post.performerUsername ?? '?'),
@@ -114,9 +116,11 @@ class _CreatorBentoCardState extends State<CreatorBentoCard>
                           const Spacer(),
                           Container(
                             padding: const EdgeInsets.symmetric(
-                                horizontal: 8, vertical: 3),
+                              horizontal: 8,
+                              vertical: 3,
+                            ),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.15),
+                              color: Colors.white.withOpacityNew(0.15),
                               borderRadius: BorderRadius.circular(100),
                             ),
                             child: Text(
@@ -146,9 +150,17 @@ class _GradientBg extends StatelessWidget {
   Widget build(BuildContext context) {
     final initial = username.isNotEmpty ? username[0].toUpperCase() : '?';
     return Container(
-      decoration: const BoxDecoration(gradient: AppColors.brandGradientDiagonal),
+      decoration: const BoxDecoration(
+        gradient: AppColors.brandGradientDiagonal,
+      ),
       child: Center(
-        child: Text(initial, style: TextStyle(fontSize: 64, color: Colors.white.withOpacity(0.3))),
+        child: Text(
+          initial,
+          style: TextStyle(
+            fontSize: 64,
+            color: Colors.white.withOpacityNew(0.3),
+          ),
+        ),
       ),
     );
   }

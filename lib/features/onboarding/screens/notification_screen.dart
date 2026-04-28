@@ -9,6 +9,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../onboarding_provider.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class NotificationScreen extends ConsumerWidget {
   const NotificationScreen({super.key});
@@ -78,7 +79,7 @@ class NotificationScreen extends ConsumerWidget {
                             width: 40,
                             height: 40,
                             decoration: BoxDecoration(
-                              color: AppColors.primary.withOpacity(0.12),
+                              color: AppColors.primary.withOpacityNew(0.12),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Center(
@@ -154,13 +155,13 @@ class _SplitScreenIllustration extends StatelessWidget {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.accent.withOpacity(0.15),
+                color: AppColors.accent.withOpacityNew(0.15),
                 borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(20),
                   bottomLeft: Radius.circular(20),
                 ),
                 border: Border.all(
-                    color: AppColors.accent.withOpacity(0.3)),
+                    color: AppColors.accent.withOpacityNew(0.3)),
               ),
               child: Center(
                 child: Column(
@@ -201,13 +202,13 @@ class _SplitScreenIllustration extends StatelessWidget {
           Expanded(
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.15),
+                color: AppColors.primary.withOpacityNew(0.15),
                 borderRadius: const BorderRadius.only(
                   topRight: Radius.circular(20),
                   bottomRight: Radius.circular(20),
                 ),
                 border: Border.all(
-                    color: AppColors.primary.withOpacity(0.3)),
+                    color: AppColors.primary.withOpacityNew(0.3)),
               ),
               child: Center(
                 child: Column(

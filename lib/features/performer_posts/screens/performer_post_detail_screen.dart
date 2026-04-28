@@ -11,6 +11,7 @@ import '../../../features/auth/auth_provider.dart';
 import '../../../shared/widgets/coin_chip.dart';
 import '../../../shared/widgets/sorto_button.dart';
 import '../performer_posts_provider.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class PerformerPostDetailScreen extends ConsumerWidget {
   const PerformerPostDetailScreen({super.key, required this.postId});
@@ -98,10 +99,10 @@ class PerformerPostDetailScreen extends ConsumerWidget {
                       padding: const EdgeInsets.symmetric(
                           horizontal: 10, vertical: 5),
                       decoration: BoxDecoration(
-                        color: AppColors.primary.withOpacity(0.1),
+                        color: AppColors.primary.withOpacityNew(0.1),
                         borderRadius: BorderRadius.circular(100),
                         border: Border.all(
-                            color: AppColors.primary.withOpacity(0.3)),
+                            color: AppColors.primary.withOpacityNew(0.3)),
                       ),
                       child: Text(
                         post.category,
@@ -123,7 +124,7 @@ class PerformerPostDetailScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.35),
+                        color: AppColors.primary.withOpacityNew(0.35),
                         blurRadius: 24,
                         offset: const Offset(0, 10),
                       ),

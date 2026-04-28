@@ -2,6 +2,7 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class GlassCard extends StatelessWidget {
   const GlassCard({
@@ -40,7 +41,7 @@ class GlassCard extends StatelessWidget {
         (isDark ? AppColors.glassDark : AppColors.glassLight);
     final frostColor = borderColor ??
         (selected
-            ? (selectionColor ?? AppColors.primary).withOpacity(0.5)
+            ? (selectionColor ?? AppColors.primary).withOpacityNew(0.5)
             : (isDark ? AppColors.glassBorderDark : AppColors.glassBorderLight));
 
     final card = Container(

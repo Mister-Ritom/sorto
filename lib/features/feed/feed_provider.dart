@@ -1,4 +1,5 @@
 // lib/features/feed/feed_provider.dart
+import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/supabase_service.dart';
 import '../../core/constants/app_constants.dart';
@@ -77,8 +78,12 @@ class DareFeedNotifier extends Notifier<DareFeedState> {
         hasMore: hasMore,
         offset: offset + dares.length,
       );
-    } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
+    } catch (e, st) {
+      dev.log('Error loading dare feed', error: e, stackTrace: st, name: 'DareFeedNotifier');
+      state = state.copyWith(
+        isLoading: false, 
+        error: 'Couldn\'t load the feed. Please check your connection.'
+      );
     }
   }
 
@@ -143,7 +148,8 @@ class SearchNotifier extends Notifier<AsyncValue<List<Dare>>> {
       state = AsyncValue.data(
           data.map<Dare>((e) => Dare.fromJson(e)).toList());
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      dev.log('Error searching dares', error: e, stackTrace: st, name: 'SearchNotifier');
+      state = AsyncValue.error('Search failed. Please try again.', st);
     }
   }
 

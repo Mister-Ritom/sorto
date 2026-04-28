@@ -15,6 +15,8 @@ import '../../../shared/widgets/coin_chip.dart';
 import '../../../shared/widgets/sorto_fab.dart';
 import '../widgets/dare_card.dart';
 import '../widgets/bento_grid.dart';
+import 'package:sorto/core/services/pwa_service.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   const HomeScreen({super.key});
@@ -35,6 +37,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _scrollCtrl.addListener(_onScroll);
+
+    // Show PWA install banner after login
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref
+          .read(pwaServiceProvider)
+          .showInstallBanner(
+            context,
+            bannerContext: PwaBannerContext.postLogin,
+          );
+    });
   }
 
   void _onScroll() {
@@ -82,13 +94,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
                   final profile = ref.watch(currentProfileProvider).value;
                   return CircleAvatar(
                     radius: 14,
-                    backgroundColor: AppColors.primary.withOpacity(0.1),
+                    backgroundColor: AppColors.primary.withOpacityNew(0.1),
                     backgroundImage: profile?.avatarUrl != null
                         ? NetworkImage(profile!.avatarUrl!)
                         : null,
                     child: profile?.avatarUrl == null
-                        ? const Icon(Icons.person_rounded,
-                            size: 18, color: AppColors.primary)
+                        ? const Icon(
+                            Icons.person_rounded,
+                            size: 18,
+                            color: AppColors.primary,
+                          )
                         : null,
                   );
                 },
@@ -242,7 +257,7 @@ class _Chip extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
         decoration: BoxDecoration(
           color: selected
-              ? AppColors.primary.withOpacity(0.2)
+              ? AppColors.primary.withOpacityNew(0.2)
               : Colors.transparent,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
@@ -365,7 +380,7 @@ class _TrendCreatorsTab extends ConsumerWidget {
 
     return postsAsync.when(
       loading: () => const BentoGridSkeleton(),
-      error: (_, __) => const Center(child: Text('Failed to load creators')),
+      error: (_, _) => const Center(child: Text('Failed to load creators')),
       data: (posts) {
         if (posts.isEmpty) {
           return Center(

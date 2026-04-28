@@ -6,6 +6,7 @@ import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class HookScreen extends StatelessWidget {
   const HookScreen({super.key});
@@ -39,7 +40,7 @@ class HookScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.primary.withOpacity(0.25),
+                    AppColors.primary.withOpacityNew(0.25),
                     Colors.transparent,
                   ],
                 ),
@@ -56,7 +57,7 @@ class HookScreen extends StatelessWidget {
                 shape: BoxShape.circle,
                 gradient: RadialGradient(
                   colors: [
-                    AppColors.accent.withOpacity(0.18),
+                    AppColors.accent.withOpacityNew(0.18),
                     Colors.transparent,
                   ],
                 ),
@@ -80,7 +81,7 @@ class HookScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.4),
+                        color: AppColors.primary.withOpacityNew(0.4),
                         blurRadius: 32,
                         offset: const Offset(0, 16),
                       ),
@@ -105,7 +106,7 @@ class HookScreen extends StatelessWidget {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
-                              color: Colors.white.withOpacity(0.2),
+                              color: Colors.white.withOpacityNew(0.2),
                               borderRadius: BorderRadius.circular(100),
                             ),
                             child: Text(
@@ -154,7 +155,7 @@ class HookScreen extends StatelessWidget {
                 borderRadius:
                     const BorderRadius.vertical(top: Radius.circular(32)),
                 border: Border.all(
-                    color: AppColors.darkCardBorder.withOpacity(0.5)),
+                    color: AppColors.darkCardBorder.withOpacityNew(0.5)),
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,

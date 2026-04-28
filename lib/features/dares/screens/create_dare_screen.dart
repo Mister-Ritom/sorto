@@ -15,6 +15,7 @@ import '../../../shared/widgets/sorto_button.dart';
 import '../../../shared/widgets/coin_chip.dart';
 import '../../../features/auth/auth_provider.dart';
 import '../dares_provider.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class CreateDareScreen extends ConsumerStatefulWidget {
   const CreateDareScreen({super.key});
@@ -217,7 +218,7 @@ class _CreateDareScreenState extends ConsumerState<CreateDareScreen> {
                           ),
                           decoration: BoxDecoration(
                             color: selected
-                                ? AppColors.primary.withOpacity(0.2)
+                                ? AppColors.primary.withOpacityNew(0.2)
                                 : (isDark
                                       ? AppColors.darkCard
                                       : AppColors.lightCard),
@@ -281,7 +282,7 @@ class _CreateDareScreenState extends ConsumerState<CreateDareScreen> {
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
                           color: _selectedMode == mode
-                              ? AppColors.primary.withOpacity(0.1)
+                              ? AppColors.primary.withOpacityNew(0.1)
                               : (isDark
                                     ? AppColors.darkCard
                                     : AppColors.lightCard),
@@ -417,7 +418,7 @@ class _CreateDareScreenState extends ConsumerState<CreateDareScreen> {
                     padding: const EdgeInsets.all(12),
                     margin: const EdgeInsets.only(bottom: 12),
                     decoration: BoxDecoration(
-                      color: AppColors.warning.withOpacity(0.1),
+                      color: AppColors.warning.withOpacityNew(0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -476,7 +477,7 @@ class _CreateDareScreenState extends ConsumerState<CreateDareScreen> {
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: selected
-                            ? AppColors.primary.withOpacity(0.1)
+                            ? AppColors.primary.withOpacityNew(0.1)
                             : (isDark
                                   ? AppColors.darkCard
                                   : AppColors.lightCard),
@@ -543,10 +544,10 @@ class _CreateDareScreenState extends ConsumerState<CreateDareScreen> {
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: AppColors.warning.withOpacity(0.08),
+                    color: AppColors.warning.withOpacityNew(0.08),
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
-                      color: AppColors.warning.withOpacity(0.3),
+                      color: AppColors.warning.withOpacityNew(0.3),
                     ),
                   ),
                   child: Row(
@@ -682,7 +683,7 @@ class _ReviewCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
+                  color: AppColors.primary.withOpacityNew(0.1),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(

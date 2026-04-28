@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 enum SortoButtonVariant { primary, secondary, outline, ghost, danger }
 
@@ -49,9 +50,10 @@ class _SortoButtonState extends State<SortoButton>
       duration: const Duration(milliseconds: 80),
       reverseDuration: const Duration(milliseconds: 180),
     );
-    _scale = Tween<double>(begin: 1.0, end: 0.96).animate(
-      CurvedAnimation(parent: _ctrl, curve: Curves.easeOut),
-    );
+    _scale = Tween<double>(
+      begin: 1.0,
+      end: 0.96,
+    ).animate(CurvedAnimation(parent: _ctrl, curve: Curves.easeOut));
   }
 
   @override
@@ -79,10 +81,8 @@ class _SortoButtonState extends State<SortoButton>
 
     return AnimatedBuilder(
       animation: _scale,
-      builder: (ctx, child) => Transform.scale(
-        scale: _scale.value,
-        child: child,
-      ),
+      builder: (ctx, child) =>
+          Transform.scale(scale: _scale.value, child: child),
       child: GestureDetector(
         onTapDown: _onTapDown,
         onTapUp: _onTapUp,
@@ -188,7 +188,7 @@ class _GradientButton extends StatelessWidget {
               ? null
               : [
                   BoxShadow(
-                    color: AppColors.primary.withOpacity(0.35),
+                    color: AppColors.primary.withOpacityNew(0.35),
                     blurRadius: 16,
                     offset: const Offset(0, 6),
                   ),
@@ -204,10 +204,7 @@ class _GradientButton extends StatelessWidget {
       return SizedBox(
         width: 22,
         height: 22,
-        child: CircularProgressIndicator(
-          color: color,
-          strokeWidth: 2.5,
-        ),
+        child: CircularProgressIndicator(color: color, strokeWidth: 2.5),
       );
     }
     return Row(
@@ -219,8 +216,9 @@ class _GradientButton extends StatelessWidget {
         ],
         Text(
           label,
-          style: AppTypography.labelL(color: color)
-              .copyWith(fontSize: fontSize),
+          style: AppTypography.labelL(
+            color: color,
+          ).copyWith(fontSize: fontSize),
         ),
         if (trailingIcon != null) ...[
           const SizedBox(width: 8),
@@ -283,8 +281,9 @@ class _SolidButton extends StatelessWidget {
                     ],
                     Text(
                       label,
-                      style: AppTypography.labelL(color: foregroundColor)
-                          .copyWith(fontSize: fontSize),
+                      style: AppTypography.labelL(
+                        color: foregroundColor,
+                      ).copyWith(fontSize: fontSize),
                     ),
                     if (trailingIcon != null) ...[
                       const SizedBox(width: 8),
@@ -346,8 +345,9 @@ class _OutlineButton extends StatelessWidget {
                     ],
                     Text(
                       label,
-                      style: AppTypography.labelL(color: AppColors.primary)
-                          .copyWith(fontSize: fontSize),
+                      style: AppTypography.labelL(
+                        color: AppColors.primary,
+                      ).copyWith(fontSize: fontSize),
                     ),
                     if (trailingIcon != null) ...[
                       const SizedBox(width: 8),
@@ -381,7 +381,9 @@ class _GhostButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final color = isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
+    final color = isDark
+        ? AppColors.darkTextSecondary
+        : AppColors.lightTextSecondary;
     return AnimatedOpacity(
       duration: const Duration(milliseconds: 150),
       opacity: isDisabled ? 0.4 : 1.0,
@@ -404,8 +406,9 @@ class _GhostButton extends StatelessWidget {
                   ],
                   Text(
                     label,
-                    style: AppTypography.bodyM(color: color)
-                        .copyWith(fontSize: fontSize),
+                    style: AppTypography.bodyM(
+                      color: color,
+                    ).copyWith(fontSize: fontSize),
                   ),
                 ],
               ),

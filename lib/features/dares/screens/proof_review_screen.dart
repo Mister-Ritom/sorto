@@ -13,6 +13,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../shared/models/dare.dart';
 import '../../../shared/widgets/sorto_button.dart';
 import '../dares_provider.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class ProofReviewScreen extends ConsumerStatefulWidget {
   const ProofReviewScreen({
@@ -62,10 +63,9 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
 
   Future<void> _approve() async {
     HapticFeedback.mediumImpact();
-    final ok = await ref.read(settleDareProvider.notifier).approve(
-          dareId: widget.dareId,
-          submissionId: widget.submissionId,
-        );
+    final ok = await ref
+        .read(settleDareProvider.notifier)
+        .approve(dareId: widget.dareId, submissionId: widget.submissionId);
     if (!mounted) return;
     if (ok) {
       HapticFeedback.heavyImpact();
@@ -83,11 +83,13 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
   Future<void> _reject() async {
     if (!_canReject) return;
     HapticFeedback.mediumImpact();
-    final ok = await ref.read(settleDareProvider.notifier).reject(
-      dareId: widget.dareId,
-      submissionId: widget.submissionId,
-      reason: _rejectReasonCtrl.text.trim(),
-    );
+    final ok = await ref
+        .read(settleDareProvider.notifier)
+        .reject(
+          dareId: widget.dareId,
+          submissionId: widget.submissionId,
+          reason: _rejectReasonCtrl.text.trim(),
+        );
     if (!mounted) return;
     if (ok) {
       Navigator.pop(context);
@@ -111,9 +113,10 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('✅', style: TextStyle(fontSize: 56))
-                .animate()
-                .scale(curve: Curves.elasticOut, duration: 600.ms),
+            const Text(
+              '✅',
+              style: TextStyle(fontSize: 56),
+            ).animate().scale(curve: Curves.elasticOut, duration: 600.ms),
             const SizedBox(height: 16),
             Text('Dare approved!', style: AppTypography.headingL()),
             const SizedBox(height: 8),
@@ -153,22 +156,32 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
       ),
       body: submissionsAsync.when(
         loading: () => const Center(
-            child: CircularProgressIndicator(color: AppColors.primary)),
+          child: CircularProgressIndicator(color: AppColors.primary),
+        ),
         error: (e, _) => Center(child: Text('Failed to load: $e')),
         data: (submissions) {
-          final submission = submissions.where((s) => s.id == widget.submissionId).firstOrNull;
+          final submission = submissions
+              .where((s) => s.id == widget.submissionId)
+              .firstOrNull;
           if (submission == null) {
-            return Center(child: Text('Submission not found', style: AppTypography.headingS()));
+            return Center(
+              child: Text(
+                'Submission not found',
+                style: AppTypography.headingS(),
+              ),
+            );
           }
 
           // Init video if we have a signed URL
           if (submission.proofVideoUrl != null && !_videoInitialized) {
             WidgetsBinding.instance.addPostFrameCallback(
-                (_) => _initVideo(submission.proofVideoUrl));
+              (_) => _initVideo(submission.proofVideoUrl),
+            );
           }
 
           final aiConfidence = submission.aiConfidence ?? 0;
-          final showWarningBanner = aiConfidence < 0.90 &&
+          final showWarningBanner =
+              aiConfidence < 0.90 &&
               aiConfidence >= AppConstants.warningBannerThreshold;
 
           return SingleChildScrollView(
@@ -181,7 +194,7 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
                   Container(
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
-                    color: AppColors.warning.withOpacity(0.15),
+                    color: AppColors.warning.withOpacityNew(0.15),
                     child: Row(
                       children: [
                         const Text('⚠️', style: TextStyle(fontSize: 20)),
@@ -189,7 +202,9 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
                         Expanded(
                           child: Text(
                             'Our system flagged potentially concerning content. Review carefully before approving.',
-                            style: AppTypography.bodyM(color: AppColors.warning),
+                            style: AppTypography.bodyM(
+                              color: AppColors.warning,
+                            ),
                           ),
                         ),
                       ],
@@ -246,7 +261,9 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
                     height: 250,
                     color: AppColors.darkCard,
                     child: const Center(
-                      child: CircularProgressIndicator(color: AppColors.primary),
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
 
@@ -267,7 +284,7 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
                       // ── Dare reference ───────────────────────────────────
                       dareAsync.when(
                         loading: () => const SizedBox.shrink(),
-                        error: (_, __) => const SizedBox.shrink(),
+                        error: (_, _) => const SizedBox.shrink(),
                         data: (dare) => dare != null
                             ? _DareReference(dare: dare)
                             : const SizedBox.shrink(),
@@ -277,9 +294,12 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
 
                       // ── Performer note ───────────────────────────────────
                       if (submission.proofText != null) ...[
-                        Text("Performer's note",
-                            style: AppTypography.labelM(
-                                color: AppColors.darkTextSecondary)),
+                        Text(
+                          "Performer's note",
+                          style: AppTypography.labelM(
+                            color: AppColors.darkTextSecondary,
+                          ),
+                        ),
                         const SizedBox(height: 6),
                         Container(
                           width: double.infinity,
@@ -288,8 +308,10 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
                             color: AppColors.darkCard,
                             borderRadius: BorderRadius.circular(14),
                           ),
-                          child: Text(submission.proofText!,
-                              style: AppTypography.bodyM()),
+                          child: Text(
+                            submission.proofText!,
+                            style: AppTypography.bodyM(),
+                          ),
                         ),
                         const SizedBox(height: 24),
                       ],
@@ -297,21 +319,34 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
                       // ── Actions ──────────────────────────────────────────
                       if (!_showRejectPanel) ...[
                         SortoButton(
-                          label: '✅ Approve',
-                          isLoading: isLoading,
-                          onPressed: isLoading ? null : _approve,
-                        ).animate(delay: 300.ms).fadeIn().slideY(begin: 0.2, end: 0),
+                              label: '✅ Approve',
+                              isLoading: isLoading,
+                              onPressed: isLoading ? null : _approve,
+                            )
+                            .animate(delay: 300.ms)
+                            .fadeIn()
+                            .slideY(begin: 0.2, end: 0),
                         const SizedBox(height: 12),
                         SortoButton(
-                          label: '❌ Reject',
-                          variant: SortoButtonVariant.danger,
-                          onPressed: isLoading ? null : () => setState(() => _showRejectPanel = true),
-                        ).animate(delay: 400.ms).fadeIn().slideY(begin: 0.2, end: 0),
+                              label: '❌ Reject',
+                              variant: SortoButtonVariant.danger,
+                              onPressed: isLoading
+                                  ? null
+                                  : () =>
+                                        setState(() => _showRejectPanel = true),
+                            )
+                            .animate(delay: 400.ms)
+                            .fadeIn()
+                            .slideY(begin: 0.2, end: 0),
                       ] else ...[
                         // ── Rejection panel ──────────────────────────────
-                        Text('Why are you rejecting this?',
-                            style: AppTypography.headingS())
-                            .animate().fadeIn(duration: 400.ms).slideY(begin: 0.3, end: 0),
+                        Text(
+                              'Why are you rejecting this?',
+                              style: AppTypography.headingS(),
+                            )
+                            .animate()
+                            .fadeIn(duration: 400.ms)
+                            .slideY(begin: 0.3, end: 0),
                         const SizedBox(height: 8),
                         Text(
                           'You must provide a reason (min ${AppConstants.minRejectionReasonLength} chars). '
@@ -324,13 +359,15 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
                           maxLines: 4,
                           maxLength: 500,
                           decoration: InputDecoration(
-                            hintText: 'e.g. The timer was not visible. The face expression was exaggerated...',
+                            hintText:
+                                'e.g. The timer was not visible. The face expression was exaggerated...',
                             counterText:
                                 '${_rejectReasonCtrl.text.length}/${AppConstants.minRejectionReasonLength} min',
                             counterStyle: AppTypography.bodyS(
-                                color: _canReject
-                                    ? AppColors.success
-                                    : AppColors.error),
+                              color: _canReject
+                                  ? AppColors.success
+                                  : AppColors.error,
+                            ),
                           ),
                         ).animate(delay: 200.ms).fadeIn(),
                         const SizedBox(height: 16),
@@ -338,7 +375,9 @@ class _ProofReviewScreenState extends ConsumerState<ProofReviewScreen> {
                           label: 'Confirm Rejection',
                           variant: SortoButtonVariant.danger,
                           isLoading: isLoading,
-                          onPressed: (_canReject && !isLoading) ? _reject : null,
+                          onPressed: (_canReject && !isLoading)
+                              ? _reject
+                              : null,
                         ),
                         const SizedBox(height: 12),
                         SortoButton(
@@ -384,9 +423,9 @@ class _AiVerdictCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: color.withOpacityNew(0.08),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: color.withOpacity(0.3)),
+        border: Border.all(color: color.withOpacityNew(0.3)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -398,9 +437,12 @@ class _AiVerdictCard extends StatelessWidget {
               Text(label, style: AppTypography.labelL(color: color)),
               const Spacer(),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
-                  color: color.withOpacity(0.15),
+                  color: color.withOpacityNew(0.15),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
@@ -432,15 +474,19 @@ class _DareReference extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('The dare contract',
-              style: AppTypography.labelM(color: AppColors.darkTextSecondary)),
+          Text(
+            'The dare contract',
+            style: AppTypography.labelM(color: AppColors.darkTextSecondary),
+          ),
           const SizedBox(height: 6),
           Text(dare.title, style: AppTypography.headingS()),
           const SizedBox(height: 4),
-          Text(dare.description,
-              style: AppTypography.bodyM(),
-              maxLines: 3,
-              overflow: TextOverflow.ellipsis),
+          Text(
+            dare.description,
+            style: AppTypography.bodyM(),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
         ],
       ),
     );

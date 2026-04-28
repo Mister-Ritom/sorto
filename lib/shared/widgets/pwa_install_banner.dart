@@ -1,0 +1,186 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:sorto/core/services/pwa_service.dart';
+import 'dart:ui';
+
+import '../../../core/theme/app_colors.dart';
+import '../../../core/theme/app_typography.dart';
+import '../../../shared/widgets/sorto_button.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
+
+class PwaInstallBanner extends ConsumerWidget {
+  final PwaBannerContext bannerContext;
+
+  const PwaInstallBanner({
+    super.key,
+    this.bannerContext = PwaBannerContext.generic,
+  });
+
+  static Future<void> show(
+    BuildContext context, {
+    PwaBannerContext bannerContext = PwaBannerContext.generic,
+  }) {
+    return showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      barrierColor: Colors.black54,
+      isScrollControlled: true,
+      builder: (context) => PwaInstallBanner(bannerContext: bannerContext),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final pwaService = ref.read(pwaServiceProvider);
+
+    String title;
+    String subtitle;
+
+    switch (bannerContext) {
+      case PwaBannerContext.postLogin:
+        title = "Install Sorto App";
+        subtitle =
+            "Experience the platform at its best. Faster, smoother, and always just one tap away.";
+        break;
+      case PwaBannerContext.firstWin:
+        title = "Ready for your next win?";
+        subtitle =
+            "You've got the talent. Now get the app to receive instant dare alerts and never miss a challenge.";
+        break;
+      case PwaBannerContext.firstPerformance:
+        title = "Your stage, your app.";
+        subtitle =
+            "Install Sorto for seamless uploads, better performance, and to keep track of your rising status.";
+        break;
+      case PwaBannerContext.firstWithdrawal:
+        title = "Keep your rewards close.";
+        subtitle =
+            "Install the app for the fastest and most secure way to manage your earnings and withdraw anytime.";
+        break;
+      case PwaBannerContext.generic:
+        title = "Add Sorto to Home Screen";
+        subtitle =
+            "Get the full experience. Install Sorto for a faster, more immersive, and reliable way to play.";
+        break;
+    }
+
+    return BackdropFilter(
+      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+      child: Container(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+        decoration: BoxDecoration(
+          color: isDark
+              ? AppColors.darkSurface.withOpacityNew(0.8)
+              : AppColors.lightSurface.withOpacityNew(0.9),
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
+          border: Border.all(
+            color: isDark
+                ? Colors.white.withOpacityNew(0.1)
+                : Colors.black.withOpacityNew(0.05),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            // Handle
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: isDark ? Colors.white24 : Colors.black12,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 32),
+
+            // Icon with Glow
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacityNew(0.3),
+                        blurRadius: 40,
+                        spreadRadius: 10,
+                      ),
+                    ],
+                  ),
+                ),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(22),
+                  child: Image.asset(
+                    'assets/icons/sorto_icon_light.png',
+                    width: 72,
+                    height: 72,
+                  ),
+                ),
+              ],
+            ).animate().scale(curve: Curves.elasticOut, duration: 800.ms),
+
+            const SizedBox(height: 24),
+
+            // Text content
+            Text(
+              title,
+              textAlign: TextAlign.center,
+              style: AppTypography.displayS().copyWith(fontSize: 24),
+            ).animate().fadeIn(delay: 200.ms).slideY(begin: 0.2, end: 0),
+
+            const SizedBox(height: 12),
+
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: AppTypography.bodyL(
+                color: isDark
+                    ? AppColors.darkTextSecondary
+                    : AppColors.lightTextSecondary,
+              ),
+            ).animate().fadeIn(delay: 350.ms).slideY(begin: 0.2, end: 0),
+
+            const SizedBox(height: 32),
+
+            // Actions
+            SortoButton(
+              label: 'Install Now',
+              onPressed: () async {
+                HapticFeedback.mediumImpact();
+                final success = await pwaService.install();
+                if (context.mounted) {
+                  Navigator.pop(context);
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Installation started!')),
+                    );
+                  }
+                }
+              },
+            ).animate().fadeIn(delay: 500.ms).slideY(begin: 0.2, end: 0),
+
+            const SizedBox(height: 12),
+
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text(
+                'Maybe Later',
+                style: AppTypography.labelL(
+                  color: isDark
+                      ? AppColors.darkTextMuted
+                      : AppColors.lightTextMuted,
+                ),
+              ),
+            ).animate().fadeIn(delay: 650.ms),
+          ],
+        ),
+      ),
+    );
+  }
+}

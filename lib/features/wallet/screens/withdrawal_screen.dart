@@ -12,7 +12,9 @@ import '../../../core/utils/validators.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../shared/widgets/coin_chip.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import '../../../core/services/pwa_service.dart';
 import '../wallet_provider.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class WithdrawalScreen extends ConsumerStatefulWidget {
   const WithdrawalScreen({super.key});
@@ -68,7 +70,10 @@ class _WithdrawalScreenState extends ConsumerState<WithdrawalScreen> {
     } else {
       final err = ref.read(withdrawalProvider).error?.toString();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(err ?? 'Withdrawal failed'), backgroundColor: AppColors.error),
+        SnackBar(
+          content: Text(err ?? 'Withdrawal failed'),
+          backgroundColor: AppColors.error,
+        ),
       );
     }
   }
@@ -101,10 +106,11 @@ class _WithdrawalScreenState extends ConsumerState<WithdrawalScreen> {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: AppColors.success.withOpacity(0.08),
+                  color: AppColors.success.withOpacityNew(0.08),
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(
-                      color: AppColors.success.withOpacity(0.2)),
+                    color: AppColors.success.withOpacityNew(0.2),
+                  ),
                 ),
                 child: Row(
                   children: [
@@ -113,9 +119,12 @@ class _WithdrawalScreenState extends ConsumerState<WithdrawalScreen> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text('Available to withdraw',
-                            style: AppTypography.labelM(
-                                color: AppColors.success.withOpacity(0.8))),
+                        Text(
+                          'Available to withdraw',
+                          style: AppTypography.labelM(
+                            color: AppColors.success.withOpacityNew(0.8),
+                          ),
+                        ),
                         CoinAmount(
                           amount: balance,
                           size: CoinAmountSize.large,
@@ -130,9 +139,10 @@ class _WithdrawalScreenState extends ConsumerState<WithdrawalScreen> {
               const SizedBox(height: 28),
 
               // ── Amount input ─────────────────────────────────────────────
-              Text('Amount to withdraw',
-                  style: AppTypography.labelL())
-                  .animate(delay: 100.ms).fadeIn(),
+              Text(
+                'Amount to withdraw',
+                style: AppTypography.labelL(),
+              ).animate(delay: 100.ms).fadeIn(),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _amountCtrl,
@@ -171,10 +181,12 @@ class _WithdrawalScreenState extends ConsumerState<WithdrawalScreen> {
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 8),
+                        horizontal: 14,
+                        vertical: 8,
+                      ),
                       decoration: BoxDecoration(
                         color: _coins == amt
-                            ? AppColors.primary.withOpacity(0.1)
+                            ? AppColors.primary.withOpacityNew(0.1)
                             : Colors.transparent,
                         borderRadius: BorderRadius.circular(100),
                         border: Border.all(
@@ -186,7 +198,8 @@ class _WithdrawalScreenState extends ConsumerState<WithdrawalScreen> {
                       child: Text(
                         '$amt SC',
                         style: AppTypography.labelM(
-                            color: _coins == amt ? AppColors.primary : null),
+                          color: _coins == amt ? AppColors.primary : null,
+                        ),
                       ),
                     ),
                   );
@@ -196,9 +209,10 @@ class _WithdrawalScreenState extends ConsumerState<WithdrawalScreen> {
               const SizedBox(height: 24),
 
               // ── UPI ID ──────────────────────────────────────────────────
-              Text('Your UPI ID',
-                  style: AppTypography.labelL())
-                  .animate(delay: 300.ms).fadeIn(),
+              Text(
+                'Your UPI ID',
+                style: AppTypography.labelL(),
+              ).animate(delay: 300.ms).fadeIn(),
               const SizedBox(height: 8),
               TextFormField(
                 controller: _upiCtrl,
@@ -218,23 +232,27 @@ class _WithdrawalScreenState extends ConsumerState<WithdrawalScreen> {
               Container(
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.06),
+                  color: AppColors.primary.withOpacityNew(0.06),
                   borderRadius: BorderRadius.circular(12),
-                  border:
-                      Border.all(color: AppColors.primary.withOpacity(0.15)),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacityNew(0.15),
+                  ),
                 ),
                 child: Column(
                   children: [
                     _SummaryRow(
-                        label: 'Coins',
-                        value: Formatters.coins(_coins)),
+                      label: 'Coins',
+                      value: Formatters.coins(_coins),
+                    ),
                     _SummaryRow(
-                        label: 'You receive',
-                        value: Formatters.rupees(_coins),
-                        highlight: true),
+                      label: 'You receive',
+                      value: Formatters.rupees(_coins),
+                      highlight: true,
+                    ),
                     _SummaryRow(
-                        label: 'Arrives in',
-                        value: '1-2 business days'),
+                      label: 'Arrives in',
+                      value: '1-2 business days',
+                    ),
                   ],
                 ),
               ).animate(delay: 450.ms).fadeIn(),
@@ -294,9 +312,9 @@ class _SummaryRow extends StatelessWidget {
   }
 }
 
-class _SuccessScreen extends StatelessWidget {
+class _SuccessScreen extends ConsumerWidget {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -305,15 +323,26 @@ class _SuccessScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('🎉', style: TextStyle(fontSize: 72))
-                    .animate()
-                    .scale(curve: Curves.elasticOut, duration: 700.ms),
+                const Text(
+                  '🎉',
+                  style: TextStyle(fontSize: 72),
+                ).animate().scale(curve: Curves.elasticOut, duration: 700.ms),
                 const SizedBox(height: 24),
-                Text('Withdrawal requested!',
-                        style: AppTypography.displayS())
+                Text('Withdrawal requested!', style: AppTypography.displayS())
                     .animate(delay: 300.ms)
                     .fadeIn(duration: 400.ms)
-                    .slideY(begin: 0.3, end: 0),
+                    .slideY(begin: 0.3, end: 0)
+                    .callback(
+                      callback: (controller) {
+                        // Trigger PWA banner for first withdrawal
+                        ref
+                            .read(pwaServiceProvider)
+                            .showInstallBanner(
+                              context,
+                              bannerContext: PwaBannerContext.firstWithdrawal,
+                            );
+                      },
+                    ),
                 const SizedBox(height: 12),
                 Text(
                   'Your UPI payment will arrive in 1–2 business days.',
@@ -322,9 +351,12 @@ class _SuccessScreen extends StatelessWidget {
                 ).animate(delay: 500.ms).fadeIn(duration: 400.ms),
                 const SizedBox(height: 40),
                 SortoButton(
-                  label: 'Back to Wallet',
-                  onPressed: () => context.go(Routes.wallet),
-                ).animate(delay: 700.ms).fadeIn(duration: 400.ms).slideY(begin: 0.3, end: 0),
+                      label: 'Back to Wallet',
+                      onPressed: () => context.go(Routes.wallet),
+                    )
+                    .animate(delay: 700.ms)
+                    .fadeIn(duration: 400.ms)
+                    .slideY(begin: 0.3, end: 0),
               ],
             ),
           ),

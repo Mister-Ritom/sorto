@@ -10,6 +10,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/app_constants.dart';
 import '../onboarding_provider.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class InterestScreen extends ConsumerStatefulWidget {
   const InterestScreen({super.key});
@@ -184,7 +185,7 @@ class _CategoryChipState extends State<_CategoryChip>
                 const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
               color: widget.isSelected
-                  ? AppColors.primary.withOpacity(0.2)
+                  ? AppColors.primary.withOpacityNew(0.2)
                   : AppColors.darkCard,
               borderRadius: BorderRadius.circular(100),
               border: Border.all(
@@ -196,7 +197,7 @@ class _CategoryChipState extends State<_CategoryChip>
               boxShadow: widget.isSelected
                   ? [
                       BoxShadow(
-                        color: AppColors.primary.withOpacity(0.25),
+                        color: AppColors.primary.withOpacityNew(0.25),
                         blurRadius: 12,
                         spreadRadius: 0,
                       ),

@@ -1,4 +1,5 @@
 // lib/features/profile/profile_provider.dart
+import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/supabase_service.dart';
 import '../../shared/models/profile.dart';
@@ -82,7 +83,8 @@ class EditProfileNotifier extends Notifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      dev.log('Error updating profile', error: e, stackTrace: st, name: 'EditProfileNotifier');
+      state = AsyncValue.error('Failed to update profile. Please try again.', st);
       return false;
     }
   }

@@ -1,4 +1,5 @@
 // lib/features/performer_posts/performer_posts_provider.dart
+import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/supabase_service.dart';
 import '../../shared/models/performer_post.dart';
@@ -42,7 +43,8 @@ class CreatePostNotifier extends Notifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
       return result['post_id'] as String?;
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      dev.log('Error creating performer post', error: e, stackTrace: st, name: 'CreatePostNotifier');
+      state = AsyncValue.error('Failed to create post. Please try again.', st);
       return null;
     }
   }
@@ -65,7 +67,8 @@ class FundPostNotifier extends Notifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      dev.log('Error funding post', error: e, stackTrace: st, name: 'FundPostNotifier');
+      state = AsyncValue.error('Funding failed. Please try again.', st);
       return false;
     }
   }

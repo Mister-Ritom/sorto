@@ -1,4 +1,5 @@
 // lib/features/dares/dares_provider.dart
+import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/supabase_service.dart';
 import '../../shared/models/dare.dart';
@@ -114,8 +115,12 @@ class CreateDareNotifier extends Notifier<CreateDareState> {
         return Dare.fromJson(result['dare'] as Map<String, dynamic>);
       }
       return null;
-    } catch (e) {
-      state = state.copyWith(isSubmitting: false, error: e.toString());
+    } catch (e, st) {
+      dev.log('Error submitting dare', error: e, stackTrace: st, name: 'CreateDareNotifier');
+      state = state.copyWith(
+        isSubmitting: false, 
+        error: 'Failed to create dare. Please check your connection and try again.'
+      );
       return null;
     }
   }
@@ -140,7 +145,8 @@ class ClaimDareNotifier extends Notifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      dev.log('Error claiming dare', error: e, stackTrace: st, name: 'ClaimDareNotifier');
+      state = AsyncValue.error('Failed to claim dare. Please try again.', st);
       return false;
     }
   }
@@ -168,7 +174,8 @@ class SubmitProofNotifier extends Notifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      dev.log('Error submitting proof', error: e, stackTrace: st, name: 'SubmitProofNotifier');
+      state = AsyncValue.error('Failed to submit proof. Please check your connection and try again.', st);
       return false;
     }
   }
@@ -192,7 +199,8 @@ class SettleDareNotifier extends Notifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      dev.log('Error approving dare', error: e, stackTrace: st, name: 'SettleDareNotifier');
+      state = AsyncValue.error('Failed to approve dare. Please try again.', st);
       return false;
     }
   }
@@ -211,7 +219,8 @@ class SettleDareNotifier extends Notifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      dev.log('Error rejecting dare', error: e, stackTrace: st, name: 'SettleDareNotifier');
+      state = AsyncValue.error('Failed to reject dare. Please try again.', st);
       return false;
     }
   }

@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'app_colors.dart';
 import 'app_text_styles.dart';
 import 'app_shapes.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class AppTheme {
   // Use Poppins with a fallback as a base for the entire app.
@@ -28,7 +29,6 @@ class AppTheme {
     final colorScheme = const ColorScheme.dark().copyWith(
       primary: AppColors.profileGold,
       secondary: AppColors.activeGlow,
-      background: AppColors.background,
       surface: AppColors.surfaceBlack,
       error: AppColors.error,
       onPrimary: AppColors.textOnLight,
@@ -51,7 +51,8 @@ class AppTheme {
 
       // Widget-Specific Themes
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.surfaceWhite, // For the Sign In screen header
+        backgroundColor:
+            AppColors.surfaceWhite, // For the Sign In screen header
         elevation: 0,
         titleTextStyle: AppTextStyles.titleLarge.copyWith(
           color: AppColors.textOnLight,
@@ -70,7 +71,7 @@ class AppTheme {
       // Configure Input Decoration Theme
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppColors.surfaceWhite.withOpacity(
+        fillColor: AppColors.surfaceWhite.withOpacityNew(
           0.05,
         ), // A dark, transparent fill
         border: AppShapes.customInputFieldBorder,

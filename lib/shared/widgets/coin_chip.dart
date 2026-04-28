@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../features/auth/auth_provider.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class CoinChip extends ConsumerStatefulWidget {
   const CoinChip({super.key, this.onTap, this.compact = false});
@@ -34,10 +35,10 @@ class _CoinChipState extends ConsumerState<CoinChip> {
     // Dark mode: Subtle Ghost Pill to match the dark aesthetic
     final coinTextColor = isDark ? AppColors.coinGold : Colors.black;
     final coinBgColor = isDark
-        ? AppColors.coinGold.withOpacity(0.12)
+        ? AppColors.coinGold.withOpacityNew(0.12)
         : AppColors.coinGold;
     final coinBorderColor = isDark
-        ? AppColors.coinGold.withOpacity(0.35)
+        ? AppColors.coinGold.withOpacityNew(0.35)
         : AppColors.coinGoldDim;
 
     return GestureDetector(
@@ -55,7 +56,7 @@ class _CoinChipState extends ConsumerState<CoinChip> {
               ? null
               : [
                   BoxShadow(
-                    color: AppColors.coinGold.withOpacity(0.3),
+                    color: AppColors.coinGold.withOpacityNew(0.3),
                     blurRadius: 10,
                     offset: const Offset(0, 4),
                   ),
@@ -212,7 +213,10 @@ class CoinAmount extends StatelessWidget {
           const SizedBox(width: 2),
         ],
         Text(
-          '${amount.toString().replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}',
+          amount.toString().replaceAllMapped(
+            RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+            (m) => '${m[1]},',
+          ),
           style: AppTypography.labelL(color: c).copyWith(fontSize: fontSize),
         ),
       ],

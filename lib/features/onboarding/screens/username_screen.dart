@@ -1,5 +1,6 @@
 // lib/features/onboarding/screens/username_screen.dart
 import 'dart:async';
+import 'dart:developer' as dev;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
@@ -12,6 +13,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/validators.dart';
 import '../onboarding_provider.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 enum _AvailabilityState { idle, checking, available, taken }
 
@@ -70,13 +72,15 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
             '${username}99',
             '${username}_',
             'the_$username',
-            '${username}${DateTime.now().year}',
+            '$username${DateTime.now().year}',
           ];
         } else {
           _suggestions = [];
         }
       });
-    } catch (_) {
+    } catch (e, st) {
+      dev.log('Error checking username availability',
+          error: e, stackTrace: st, name: 'UsernameScreen');
       if (mounted) setState(() => _avail = _AvailabilityState.idle);
     }
   }
@@ -114,14 +118,12 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
               const SizedBox(height: 40),
               Text(
                 'What do they\ncall you?',
-                style:
-                    AppTypography.displayM(color: AppColors.darkTextPrimary),
+                style: AppTypography.displayM(color: AppColors.darkTextPrimary),
               ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.3, end: 0),
               const SizedBox(height: 8),
               Text(
                 'This is your identity on Sorto. Make it good.',
-                style:
-                    AppTypography.bodyM(color: AppColors.darkTextSecondary),
+                style: AppTypography.bodyM(color: AppColors.darkTextSecondary),
               ).animate(delay: 150.ms).fadeIn(duration: 400.ms),
               const SizedBox(height: 40),
 
@@ -132,21 +134,21 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
                     controller: _ctrl,
                     focusNode: _focus,
                     style: AppTypography.usernameDisplay(
-                        color: AppColors.darkTextPrimary),
+                      color: AppColors.darkTextPrimary,
+                    ),
                     textAlign: TextAlign.center,
                     inputFormatters: [
-                      FilteringTextInputFormatter.allow(
-                          RegExp(r'[a-z0-9_\.]')),
+                      FilteringTextInputFormatter.allow(RegExp(r'[a-z0-9_\.]')),
                     ],
                     decoration: InputDecoration(
                       hintText: 'yourusername',
                       hintStyle: AppTypography.usernameDisplay(
-                          color: AppColors.darkTextMuted),
+                        color: AppColors.darkTextMuted,
+                      ),
                       border: InputBorder.none,
                       enabledBorder: InputBorder.none,
                       focusedBorder: InputBorder.none,
-                      contentPadding:
-                          const EdgeInsets.symmetric(vertical: 16),
+                      contentPadding: const EdgeInsets.symmetric(vertical: 16),
                     ),
                   ),
                   Positioned(
@@ -167,7 +169,7 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
                       : LinearGradient(
                           colors: [
                             AppColors.darkCardBorder,
-                            AppColors.darkCardBorder
+                            AppColors.darkCardBorder,
                           ],
                         ),
                   borderRadius: BorderRadius.circular(2),
@@ -197,8 +199,9 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
                 const SizedBox(height: 24),
                 Text(
                   'How about one of these?',
-                  style:
-                      AppTypography.bodyS(color: AppColors.darkTextSecondary),
+                  style: AppTypography.bodyS(
+                    color: AppColors.darkTextSecondary,
+                  ),
                 ),
                 const SizedBox(height: 10),
                 Wrap(
@@ -213,17 +216,19 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 14, vertical: 8),
+                          horizontal: 14,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
-                          color: AppColors.primary.withOpacity(0.1),
+                          color: AppColors.primary.withOpacityNew(0.1),
                           borderRadius: BorderRadius.circular(100),
                           border: Border.all(
-                              color: AppColors.primary.withOpacity(0.3)),
+                            color: AppColors.primary.withOpacityNew(0.3),
+                          ),
                         ),
                         child: Text(
                           s,
-                          style:
-                              AppTypography.labelM(color: AppColors.primary),
+                          style: AppTypography.labelM(color: AppColors.primary),
                         ),
                       ),
                     );
@@ -256,26 +261,26 @@ class _AvailabilityIcon extends StatelessWidget {
       child: switch (state) {
         _AvailabilityState.idle => const SizedBox.shrink(key: ValueKey('idle')),
         _AvailabilityState.checking => const SizedBox(
-            key: ValueKey('checking'),
-            width: 20,
-            height: 20,
-            child: CircularProgressIndicator(
-              strokeWidth: 2,
-              color: AppColors.primary,
-            ),
+          key: ValueKey('checking'),
+          width: 20,
+          height: 20,
+          child: CircularProgressIndicator(
+            strokeWidth: 2,
+            color: AppColors.primary,
           ),
+        ),
         _AvailabilityState.available => const Icon(
-            Icons.check_circle_rounded,
-            key: ValueKey('ok'),
-            color: AppColors.success,
-            size: 24,
-          ),
+          Icons.check_circle_rounded,
+          key: ValueKey('ok'),
+          color: AppColors.success,
+          size: 24,
+        ),
         _AvailabilityState.taken => const Icon(
-            Icons.cancel_rounded,
-            key: ValueKey('taken'),
-            color: AppColors.error,
-            size: 24,
-          ),
+          Icons.cancel_rounded,
+          key: ValueKey('taken'),
+          color: AppColors.error,
+          size: 24,
+        ),
       },
     );
   }
@@ -303,7 +308,7 @@ class _CreatorCardPreview extends StatelessWidget {
         boxShadow: isAvailable
             ? [
                 BoxShadow(
-                  color: AppColors.primary.withOpacity(0.2),
+                  color: AppColors.primary.withOpacityNew(0.2),
                   blurRadius: 16,
                 ),
               ]
@@ -321,9 +326,7 @@ class _CreatorCardPreview extends StatelessWidget {
             ),
             child: Center(
               child: Text(
-                username.isNotEmpty
-                    ? username[0].toUpperCase()
-                    : '?',
+                username.isNotEmpty ? username[0].toUpperCase() : '?',
                 style: AppTypography.headingL(color: Colors.white),
               ),
             ),
@@ -336,12 +339,14 @@ class _CreatorCardPreview extends StatelessWidget {
                 Text(
                   '@$username',
                   style: AppTypography.headingS(
-                      color: AppColors.darkTextPrimary),
+                    color: AppColors.darkTextPrimary,
+                  ),
                 ),
                 Text(
                   '0 followers · 0 dares',
-                  style:
-                      AppTypography.bodyS(color: AppColors.darkTextSecondary),
+                  style: AppTypography.bodyS(
+                    color: AppColors.darkTextSecondary,
+                  ),
                 ),
               ],
             ),

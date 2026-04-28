@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/sorto_button.dart';
 import '../../../shared/widgets/sorto_logo.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class WalletIntroScreen extends StatelessWidget {
   const WalletIntroScreen({super.key});
@@ -49,7 +50,7 @@ class WalletIntroScreen extends StatelessWidget {
                       decoration: BoxDecoration(
                         boxShadow: [
                           BoxShadow(
-                            color: AppColors.coinGold.withOpacity(0.4 * val),
+                            color: AppColors.coinGold.withOpacityNew(0.4 * val),
                             blurRadius: 60,
                             spreadRadius: 20,
                           ),
@@ -109,10 +110,10 @@ class WalletIntroScreen extends StatelessWidget {
                           vertical: 8,
                         ),
                         decoration: BoxDecoration(
-                          color: AppColors.coinGold.withOpacity(0.1),
+                          color: AppColors.coinGold.withOpacityNew(0.1),
                           borderRadius: BorderRadius.circular(100),
                           border: Border.all(
-                            color: AppColors.coinGold.withOpacity(0.3),
+                            color: AppColors.coinGold.withOpacityNew(0.3),
                           ),
                         ),
                         child: Text(
@@ -200,7 +201,7 @@ class _WalletStatCard extends StatelessWidget {
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: color.withOpacity(0.12),
+              color: color.withOpacityNew(0.12),
               borderRadius: BorderRadius.circular(14),
             ),
             child: Center(
@@ -229,7 +230,7 @@ class _WalletStatCard extends StatelessWidget {
           ),
           Text(
             subtitle,
-            style: AppTypography.bodyS(color: color.withOpacity(0.8)),
+            style: AppTypography.bodyS(color: color.withOpacityNew(0.8)),
           ),
         ],
       ),

@@ -1,12 +1,10 @@
 // lib/features/profile/screens/own_profile_screen.dart
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
-import '../../../features/auth/auth_provider.dart';
 import '../../../shared/widgets/skeleton_loader.dart';
 import '../profile_provider.dart';
 import '../widgets/profile_widgets.dart';
@@ -58,7 +56,9 @@ class _OwnProfileScreenState extends ConsumerState<OwnProfileScreen>
         error: (e, _) => Center(child: Text('Failed to load profile: $e')),
         data: (profile) {
           if (profile == null) {
-            return Center(child: Text('Profile not found', style: AppTypography.headingS()));
+            return Center(
+              child: Text('Profile not found', style: AppTypography.headingS()),
+            );
           }
           return NestedScrollView(
             headerSliverBuilder: (ctx, inner) => [
@@ -97,7 +97,10 @@ class _TabDelegate extends SliverPersistentHeaderDelegate {
 
   @override
   Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
     return Container(
       color: Theme.of(context).scaffoldBackgroundColor,
       child: TabBar(
@@ -130,7 +133,8 @@ class _PostedDares extends ConsumerWidget {
     final daresAsync = ref.watch(myPostedDaresProvider);
     return daresAsync.when(
       loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.primary)),
+        child: CircularProgressIndicator(color: AppColors.primary),
+      ),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (dares) {
         if (dares.isEmpty) {
@@ -159,7 +163,8 @@ class _CompletedDares extends ConsumerWidget {
     final daresAsync = ref.watch(myCompletedDaresProvider);
     return daresAsync.when(
       loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.primary)),
+        child: CircularProgressIndicator(color: AppColors.primary),
+      ),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (dares) {
         if (dares.isEmpty) {
@@ -172,8 +177,8 @@ class _CompletedDares extends ConsumerWidget {
         return ListView.builder(
           padding: const EdgeInsets.all(16),
           itemCount: dares.length,
-          itemBuilder: (ctx, i) => DareMiniCard(
-              dare: dares[i], showEarnings: true),
+          itemBuilder: (ctx, i) =>
+              DareMiniCard(dare: dares[i], showEarnings: true),
         );
       },
     );
@@ -189,7 +194,8 @@ class _PerformerPosts extends ConsumerWidget {
     final postsAsync = ref.watch(myPerformerPostsProvider);
     return postsAsync.when(
       loading: () => const Center(
-          child: CircularProgressIndicator(color: AppColors.primary)),
+        child: CircularProgressIndicator(color: AppColors.primary),
+      ),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (posts) {
         if (posts.isEmpty) {

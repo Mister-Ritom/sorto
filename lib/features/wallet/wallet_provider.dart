@@ -122,7 +122,8 @@ class WithdrawalNotifier extends Notifier<AsyncValue<void>> {
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
-      state = AsyncValue.error(e, st);
+      dev.log('Error initiating withdrawal', error: e, stackTrace: st, name: 'WithdrawalNotifier');
+      state = AsyncValue.error('Withdrawal failed. Please check your UPI ID and balance.', st);
       return false;
     }
   }

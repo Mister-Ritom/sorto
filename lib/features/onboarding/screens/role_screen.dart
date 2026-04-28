@@ -9,6 +9,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../onboarding_provider.dart';
 import '../../../shared/widgets/animated_coin.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class RoleScreen extends ConsumerStatefulWidget {
   const RoleScreen({super.key});
@@ -212,7 +213,7 @@ class _RoleCardState extends State<_RoleCard>
               boxShadow: widget.isSelected
                   ? [
                       BoxShadow(
-                        color: widget.color.withOpacity(0.35 * _glow.value),
+                        color: widget.color.withOpacityNew(0.35 * _glow.value),
                         blurRadius: 24,
                         spreadRadius: 2,
                       ),
@@ -228,7 +229,7 @@ class _RoleCardState extends State<_RoleCard>
                   width: 56,
                   height: 56,
                   decoration: BoxDecoration(
-                    color: widget.color.withOpacity(0.15),
+                    color: widget.color.withOpacityNew(0.15),
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Center(

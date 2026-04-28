@@ -10,6 +10,7 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/formatters.dart';
 import '../../../shared/models/notification_model.dart';
 import '../notifications_provider.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class NotificationsScreen extends ConsumerWidget {
   const NotificationsScreen({super.key});
@@ -104,12 +105,12 @@ class _NotificationRow extends StatelessWidget {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: isUnread
-              ? AppColors.primary.withOpacity(0.06)
+              ? AppColors.primary.withOpacityNew(0.06)
               : (isDark ? AppColors.darkCard : AppColors.lightCard),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
             color: isUnread
-                ? AppColors.primary.withOpacity(0.2)
+                ? AppColors.primary.withOpacityNew(0.2)
                 : (isDark ? AppColors.darkCardBorder : AppColors.lightCardBorder),
           ),
         ),
@@ -121,7 +122,7 @@ class _NotificationRow extends StatelessWidget {
               width: 42,
               height: 42,
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
+                color: AppColors.primary.withOpacityNew(0.1),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Center(

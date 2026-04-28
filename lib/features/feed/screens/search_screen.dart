@@ -6,10 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/app_constants.dart';
-import '../../../shared/models/dare.dart';
 import '../../../shared/widgets/skeleton_loader.dart';
 import '../feed_provider.dart';
 import '../widgets/dare_card.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class SearchScreen extends ConsumerStatefulWidget {
   const SearchScreen({super.key});
@@ -35,7 +35,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   void _onSearch() {
     _debounce?.cancel();
     _debounce = Timer(const Duration(milliseconds: 400), () {
-      ref.read(searchProvider.notifier).search(
+      ref
+          .read(searchProvider.notifier)
+          .search(
             _ctrl.text.trim(),
             category: _selectedCategory,
             mode: _selectedMode,
@@ -44,7 +46,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   void _applyFilters() {
-    ref.read(searchProvider.notifier).search(
+    ref
+        .read(searchProvider.notifier)
+        .search(
           _ctrl.text.trim(),
           category: _selectedCategory,
           mode: _selectedMode,
@@ -70,9 +74,10 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           controller: _ctrl,
           focusNode: _focus,
           style: AppTypography.bodyL(
-              color: isDark
-                  ? AppColors.darkTextPrimary
-                  : AppColors.lightTextPrimary),
+            color: isDark
+                ? AppColors.darkTextPrimary
+                : AppColors.lightTextPrimary,
+          ),
           decoration: InputDecoration(
             hintText: 'Search dares...',
             hintStyle: AppTypography.bodyL(color: AppColors.darkTextMuted),
@@ -115,17 +120,20 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     _applyFilters();
                   },
                 ),
-                ...AppConstants.dareCategories.map((cat) => _FilterChip(
-                      label: cat,
-                      selected: _selectedCategory == cat,
-                      onTap: () {
-                        setState(() {
-                          _selectedCategory =
-                              _selectedCategory == cat ? null : cat;
-                        });
-                        _applyFilters();
-                      },
-                    )),
+                ...AppConstants.dareCategories.map(
+                  (cat) => _FilterChip(
+                    label: cat,
+                    selected: _selectedCategory == cat,
+                    onTap: () {
+                      setState(() {
+                        _selectedCategory = _selectedCategory == cat
+                            ? null
+                            : cat;
+                      });
+                      _applyFilters();
+                    },
+                  ),
+                ),
               ],
             ),
           ),
@@ -135,28 +143,34 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             child: Row(
               children: [
-                Text('Mode:',
-                    style: AppTypography.labelM(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+                Text(
+                  'Mode:',
+                  style: AppTypography.labelM(
+                    color: Theme.of(
+                      context,
+                    ).colorScheme.onSurface.withValues(alpha: 0.6),
+                  ),
+                ),
                 const SizedBox(width: 8),
-                ...[null, 'solo', 'open_split', 'open_best']
-                    .map((mode) => Padding(
-                          padding: const EdgeInsets.only(right: 6),
-                          child: _FilterChip(
-                            label: mode == null
-                                ? 'Any'
-                                : mode == 'solo'
-                                    ? 'Solo'
-                                    : mode == 'open_split'
-                                        ? 'Split'
-                                        : 'Best',
-                            selected: _selectedMode == mode,
-                            onTap: () {
-                              setState(() => _selectedMode = mode);
-                              _applyFilters();
-                            },
-                          ),
-                        )),
+                ...[null, 'solo', 'open_split', 'open_best'].map(
+                  (mode) => Padding(
+                    padding: const EdgeInsets.only(right: 6),
+                    child: _FilterChip(
+                      label: mode == null
+                          ? 'Any'
+                          : mode == 'solo'
+                          ? 'Solo'
+                          : mode == 'open_split'
+                          ? 'Split'
+                          : 'Best',
+                      selected: _selectedMode == mode,
+                      onTap: () {
+                        setState(() => _selectedMode = mode);
+                        _applyFilters();
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -171,8 +185,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 itemBuilder: (_, i) => const DareCardSkeleton(),
               ),
               error: (e, _) => Center(
-                child: Text('Search failed: $e',
-                    style: AppTypography.bodyM()),
+                child: Text('Search failed: $e', style: AppTypography.bodyM()),
               ),
               data: (dares) {
                 if (_ctrl.text.isEmpty) {
@@ -217,16 +230,21 @@ class _FilterChip extends StatelessWidget {
         margin: const EdgeInsets.only(right: 8),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
         decoration: BoxDecoration(
-          color: selected ? AppColors.primary.withOpacity(0.15) : Colors.transparent,
+          color: selected
+              ? AppColors.primary.withOpacityNew(0.15)
+              : Colors.transparent,
           borderRadius: BorderRadius.circular(100),
           border: Border.all(
-            color: selected ? AppColors.primary : Theme.of(context).dividerColor,
+            color: selected
+                ? AppColors.primary
+                : Theme.of(context).dividerColor,
           ),
         ),
         child: Text(
           label,
           style: AppTypography.labelM(
-              color: selected ? AppColors.primary : null),
+            color: selected ? AppColors.primary : null,
+          ),
         ),
       ),
     );
@@ -241,8 +259,7 @@ class _SearchHints extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Popular categories',
-              style: AppTypography.headingS()),
+          Text('Popular categories', style: AppTypography.headingS()),
           const SizedBox(height: 16),
           Wrap(
             spacing: 8,
@@ -250,14 +267,21 @@ class _SearchHints extends StatelessWidget {
             children: AppConstants.dareCategories.map((cat) {
               final emoji = AppConstants.categoryEmoji[cat] ?? '🎯';
               return Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(100),
-                  border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 10,
                 ),
-                child: Text('$emoji $cat',
-                    style: AppTypography.labelM(color: AppColors.primary)),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacityNew(0.08),
+                  borderRadius: BorderRadius.circular(100),
+                  border: Border.all(
+                    color: AppColors.primary.withOpacityNew(0.2),
+                  ),
+                ),
+                child: Text(
+                  '$emoji $cat',
+                  style: AppTypography.labelM(color: AppColors.primary),
+                ),
               );
             }).toList(),
           ),
@@ -277,16 +301,20 @@ class _NoResults extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('🔍', style: TextStyle(fontSize: 48))
-              .animate().scale(curve: Curves.elasticOut),
+          const Text(
+            '🔍',
+            style: TextStyle(fontSize: 48),
+          ).animate().scale(curve: Curves.elasticOut),
           const SizedBox(height: 16),
-          Text('No dares for "$query"',
-              style: AppTypography.headingS())
-              .animate(delay: 200.ms).fadeIn(),
+          Text(
+            'No dares for "$query"',
+            style: AppTypography.headingS(),
+          ).animate(delay: 200.ms).fadeIn(),
           const SizedBox(height: 8),
-          Text('Try different words or categories.',
-              style: AppTypography.bodyM())
-              .animate(delay: 300.ms).fadeIn(),
+          Text(
+            'Try different words or categories.',
+            style: AppTypography.bodyM(),
+          ).animate(delay: 300.ms).fadeIn(),
         ],
       ),
     );

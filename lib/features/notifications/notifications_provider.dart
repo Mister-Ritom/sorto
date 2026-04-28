@@ -1,4 +1,5 @@
 // lib/features/notifications/notifications_provider.dart
+import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/supabase_service.dart';
 import '../../shared/models/notification_model.dart';
@@ -28,7 +29,10 @@ class NotificationsNotifier extends Notifier<void> {
   Future<void> markRead(String notificationId) async {
     try {
       await _svc.markNotificationRead(notificationId);
-    } catch (_) {}
+    } catch (e, st) {
+      dev.log('Error marking notification as read',
+          error: e, stackTrace: st, name: 'NotificationsNotifier');
+    }
   }
 
   Future<void> markAllRead() async {
@@ -36,7 +40,10 @@ class NotificationsNotifier extends Notifier<void> {
     if (userId == null) return;
     try {
       await _svc.markAllNotificationsRead(userId);
-    } catch (_) {}
+    } catch (e, st) {
+      dev.log('Error marking all notifications as read',
+          error: e, stackTrace: st, name: 'NotificationsNotifier');
+    }
   }
 }
 

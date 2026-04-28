@@ -71,6 +71,13 @@ class PaymentService {
       if (rcResult != null) return rcResult;
       // RevenueCat returned null → offerings missing (sideloaded), fall through
     }
+
+    if (!context.mounted) {
+      return PaymentFailed(
+        'Failed to create payment order, BuildContext not available',
+      );
+    }
+
     // Web / Desktop — or RevenueCat unavailable — use Razorpay
     return _razorpay(tier, context, countryCodeOverride: countryCodeOverride);
   }
@@ -85,11 +92,16 @@ class PaymentService {
     try {
       offerings = await Purchases.getOfferings();
     } catch (e, st) {
-      _logError('RevenueCat getOfferings failed — falling back to Razorpay', e, st);
+      _logError(
+        'RevenueCat getOfferings failed — falling back to Razorpay',
+        e,
+        st,
+      );
       return null;
     }
 
-    if (offerings.current == null || offerings.current!.availablePackages.isEmpty) {
+    if (offerings.current == null ||
+        offerings.current!.availablePackages.isEmpty) {
       return null; // Sideloaded or no offerings configured — fall back silently
     }
 
@@ -99,12 +111,13 @@ class PaymentService {
       package = offerings.current!.availablePackages.firstWhere(
         (p) => p.identifier == tier.revenueCatId,
       );
-    } catch (_) {
+    } catch (e, st) {
+      _logError('This specific tier (${tier.revenueCatId}) not in offerings', e, st);
       return null; // This specific tier not in offerings — fall back
     }
 
     try {
-      await Purchases.purchasePackage(package);
+      await Purchases.purchase(PurchaseParams.package(package));
       _log('RevenueCat purchase succeeded for ${tier.revenueCatId}');
       return PaymentSuccess(tier.coins);
     } on PurchasesError catch (e, st) {
@@ -133,7 +146,8 @@ class PaymentService {
     final Map<String, dynamic> orderData;
     try {
       // Get country code without permissions
-      final countryCode = countryCodeOverride ??
+      final countryCode =
+          countryCodeOverride ??
           WidgetsBinding.instance.platformDispatcher.locale.countryCode ??
           'IN';
 
@@ -155,16 +169,21 @@ class PaymentService {
       _log('Order created: ${orderData['order_id']}');
     } catch (e, st) {
       _logError('create-razorpay-order invocation failed', e, st);
-      return PaymentFailed('Order creation failed: $e');
+      return const PaymentFailed('We couldn\'t start the payment process. Please try again.');
     }
 
-    // Step 2 & 3 — open checkout, await result
-    return _openCheckout(
-      orderId: orderData['order_id'] as String,
-      // amount comes back from server in paise (as Razorpay requires for display)
-      amountFromServer: orderData['amount'] as int,
-      tier: tier,
-      context: context,
+    if (context.mounted) {
+      // Step 2 & 3 — open checkout, await result
+      return _openCheckout(
+        orderId: orderData['order_id'] as String,
+        // amount comes back from server in paise (as Razorpay requires for display)
+        amountFromServer: orderData['amount'] as int,
+        tier: tier,
+        context: context,
+      );
+    }
+    return PaymentFailed(
+      'Failed to create payment order, BuildContext not available',
     );
   }
 
@@ -179,8 +198,12 @@ class PaymentService {
 
     void cleanup() => razorpay.clear();
 
-    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, (PaymentSuccessResponse res) async {
-      _log('Razorpay payment success — payment_id: ${res.paymentId}, order_id: ${res.orderId}');
+    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, (
+      PaymentSuccessResponse res,
+    ) async {
+      _log(
+        'Razorpay payment success — payment_id: ${res.paymentId}, order_id: ${res.orderId}',
+      );
       cleanup();
       try {
         _log('Invoking verify-razorpay-payment...');
@@ -200,16 +223,24 @@ class PaymentService {
           completer.complete(PaymentSuccess(tier.coins));
         } else {
           _log('ERROR: Verification returned unexpected data: $data');
-          completer.complete(const PaymentFailed('Payment verification failed'));
+          completer.complete(
+            const PaymentFailed('Payment verification failed'),
+          );
         }
       } catch (e, st) {
-        _logError('verify-razorpay-payment invocation threw an exception', e, st);
-        completer.complete(PaymentFailed('Verification error: $e'));
+        _logError(
+          'verify-razorpay-payment invocation threw an exception',
+          e,
+          st,
+        );
+        completer.complete(const PaymentFailed('Something went wrong during verification. Our team will verify it shortly.'));
       }
     });
 
     razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, (PaymentFailureResponse res) {
-      _log('Razorpay payment error — code: ${res.code}, message: ${res.message}');
+      _log(
+        'Razorpay payment error — code: ${res.code}, message: ${res.message}',
+      );
       cleanup();
       if (res.code == 2) {
         _log('User cancelled the payment');
@@ -225,18 +256,15 @@ class PaymentService {
       completer.complete(const PaymentCancelled());
     });
 
-    razorpay.open(
-      {
-        'key': ApiConstants.razorpayKeyId,
-        'amount': amountFromServer, // paise, comes from server
-        'order_id': orderId,
-        'currency': 'INR',
-        'name': 'Sorto',
-        'description': '${tier.coins} Sorto Coins',
-        'theme': {'color': '#7C3AED'},
-      },
-      context: context,
-    );
+    razorpay.open({
+      'key': ApiConstants.razorpayKeyId,
+      'amount': amountFromServer, // paise, comes from server
+      'order_id': orderId,
+      'currency': 'INR',
+      'name': 'Sorto',
+      'description': '${tier.coins} Sorto Coins',
+      'theme': {'color': '#7C3AED'},
+    }, context: context);
 
     return completer.future;
   }

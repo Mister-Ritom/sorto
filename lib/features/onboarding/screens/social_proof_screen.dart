@@ -6,6 +6,7 @@ import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/sorto_button.dart';
+import 'package:sorto/core/extensions/color_extensions.dart';
 
 class SocialProofScreen extends StatelessWidget {
   const SocialProofScreen({super.key});
@@ -184,12 +185,12 @@ class _BentoGridDecoration extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = [
-      AppColors.primary.withOpacity(0.6),
-      AppColors.accent.withOpacity(0.6),
-      AppColors.success.withOpacity(0.6),
-      AppColors.primary.withOpacity(0.4),
-      AppColors.accent.withOpacity(0.4),
-      AppColors.warning.withOpacity(0.4),
+      AppColors.primary.withOpacityNew(0.6),
+      AppColors.accent.withOpacityNew(0.6),
+      AppColors.success.withOpacityNew(0.6),
+      AppColors.primary.withOpacityNew(0.4),
+      AppColors.accent.withOpacityNew(0.4),
+      AppColors.warning.withOpacityNew(0.4),
     ];
     return GridView.count(
       physics: const NeverScrollableScrollPhysics(),
