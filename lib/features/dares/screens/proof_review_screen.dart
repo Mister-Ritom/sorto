@@ -512,7 +512,6 @@ class _VideoProgressSliderState extends State<_VideoProgressSlider> {
 
   @override
   Widget build(BuildContext context) {
-    final position = widget.ctrl.value.position;
     final duration = widget.ctrl.value.duration;
     if (duration.inMilliseconds == 0) return const SizedBox.shrink();
 

@@ -187,13 +187,31 @@ class HookScreen extends StatelessWidget {
                       .animate(delay: 700.ms)
                       .fadeIn(duration: 400.ms)
                       .slideY(begin: 0.5, end: 0),
+                  const SizedBox(height: 12),
+                  Center(
+                    child: TextButton(
+                      onPressed: () => context.push(Routes.signIn),
+                      child: RichText(
+                        text: TextSpan(
+                          style: AppTypography.bodyM(color: AppColors.darkTextSecondary),
+                          children: [
+                            const TextSpan(text: 'Already have an account? '),
+                            TextSpan(
+                              text: 'Sign in',
+                              style: AppTypography.labelL(color: AppColors.primary),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ).animate(delay: 800.ms).fadeIn(duration: 400.ms),
                   const SizedBox(height: 16),
                   Center(
                     child: Text(
                       'Free to join. No credit card needed.',
                       style: AppTypography.bodyS(
                           color: AppColors.darkTextMuted),
-                    ).animate(delay: 900.ms).fadeIn(duration: 400.ms),
+                    ).animate(delay: 1000.ms).fadeIn(duration: 400.ms),
                   ),
                 ],
               ),

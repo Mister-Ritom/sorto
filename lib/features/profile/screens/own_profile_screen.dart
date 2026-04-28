@@ -35,7 +35,6 @@ class _OwnProfileScreenState extends ConsumerState<OwnProfileScreen>
   @override
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(ownProfileProvider);
-    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(

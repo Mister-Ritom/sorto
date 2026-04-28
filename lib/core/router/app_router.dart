@@ -100,6 +100,9 @@ class Routes {
   static const notifications = '/notifications';
   static const settings = '/settings';
   static const adminContestQueue = '/admin/contests';
+
+  static const privacyPolicy = '/legal/privacy';
+  static const termsOfService = '/legal/terms';
 }
 
 // ─── ROUTER PROVIDER ─────────────────────────────────────────────────────────

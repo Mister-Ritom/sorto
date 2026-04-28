@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sorto/core/constants/app_constants.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/services/supabase_service.dart';
 import '../../../core/theme/app_colors.dart';
@@ -79,8 +80,12 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
         }
       });
     } catch (e, st) {
-      dev.log('Error checking username availability',
-          error: e, stackTrace: st, name: 'UsernameScreen');
+      dev.log(
+        'Error checking username availability',
+        error: e,
+        stackTrace: st,
+        name: 'UsernameScreen',
+      );
       if (mounted) setState(() => _avail = _AvailabilityState.idle);
     }
   }
@@ -140,7 +145,10 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
                     inputFormatters: [
                       FilteringTextInputFormatter.allow(RegExp(r'[a-z0-9_\.]')),
                     ],
+                    maxLength: AppConstants.usernameMaxLength,
+                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
                     decoration: InputDecoration(
+                      counterText: '',
                       hintText: 'yourusername',
                       hintStyle: AppTypography.usernameDisplay(
                         color: AppColors.darkTextMuted,
@@ -191,8 +199,36 @@ class _UsernameScreenState extends ConsumerState<UsernameScreen> {
                 child: _CreatorCardPreview(
                   username: username.isEmpty ? 'yourusername' : username,
                   isAvailable: _canProceed,
+                  isTaken: _avail == _AvailabilityState.taken,
                 ),
               ).animate(delay: 400.ms).fadeIn(duration: 500.ms),
+
+              // ── Sign in link (only if taken) ──────────────────────────────
+              if (_avail == _AvailabilityState.taken)
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 24),
+                    child: TextButton(
+                      onPressed: () => context.push(Routes.signIn),
+                      child: RichText(
+                        text: TextSpan(
+                          style: AppTypography.bodyM(
+                            color: AppColors.darkTextSecondary,
+                          ),
+                          children: [
+                            const TextSpan(text: 'Is this you? '),
+                            TextSpan(
+                              text: 'Sign in',
+                              style: AppTypography.labelL(
+                                color: AppColors.primary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ).animate().fadeIn(duration: 300.ms).slideY(begin: 0.2, end: 0),
 
               // ── Suggestions ───────────────────────────────────────────────
               if (_suggestions.isNotEmpty) ...[
@@ -290,9 +326,11 @@ class _CreatorCardPreview extends StatelessWidget {
   const _CreatorCardPreview({
     required this.username,
     required this.isAvailable,
+    required this.isTaken,
   });
   final String username;
   final bool isAvailable;
+  final bool isTaken;
 
   @override
   Widget build(BuildContext context) {
@@ -302,7 +340,11 @@ class _CreatorCardPreview extends StatelessWidget {
         color: AppColors.darkCard,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: isAvailable ? AppColors.primary : AppColors.darkCardBorder,
+          color: isAvailable
+              ? AppColors.primary
+              : isTaken
+              ? AppColors.error.withOpacityNew(0.5)
+              : AppColors.darkCardBorder,
           width: isAvailable ? 1.5 : 1,
         ),
         boxShadow: isAvailable
@@ -321,7 +363,9 @@ class _CreatorCardPreview extends StatelessWidget {
             width: 52,
             height: 52,
             decoration: BoxDecoration(
-              gradient: AppColors.brandGradientDiagonal,
+              gradient: isTaken
+                  ? LinearGradient(colors: [Colors.grey, Colors.grey.shade800])
+                  : AppColors.brandGradientDiagonal,
               borderRadius: BorderRadius.circular(100),
             ),
             child: Center(
@@ -339,11 +383,15 @@ class _CreatorCardPreview extends StatelessWidget {
                 Text(
                   '@$username',
                   style: AppTypography.headingS(
-                    color: AppColors.darkTextPrimary,
+                    color: isTaken
+                        ? AppColors.darkTextSecondary
+                        : AppColors.darkTextPrimary,
                   ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
                 ),
                 Text(
-                  '0 followers · 0 dares',
+                  isTaken ? 'Already a member' : '0 followers · 0 dares',
                   style: AppTypography.bodyS(
                     color: AppColors.darkTextSecondary,
                   ),
@@ -354,11 +402,18 @@ class _CreatorCardPreview extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
             decoration: BoxDecoration(
-              gradient: AppColors.brandGradient,
+              gradient: isTaken
+                  ? LinearGradient(
+                      colors: [
+                        AppColors.error,
+                        AppColors.error.withOpacityNew(0.7),
+                      ],
+                    )
+                  : AppColors.brandGradient,
               borderRadius: BorderRadius.circular(100),
             ),
             child: Text(
-              'New',
+              isTaken ? 'Taken' : 'New',
               style: AppTypography.labelS(color: Colors.white),
             ),
           ),

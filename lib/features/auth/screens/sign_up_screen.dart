@@ -4,12 +4,15 @@ import 'package:flutter/services.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../core/constants/app_constants.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/utils/validators.dart';
 import '../../../shared/widgets/sorto_button.dart';
 import '../auth_provider.dart';
+import '../../onboarding/onboarding_provider.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
@@ -26,6 +29,16 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   final _confirmCtrl = TextEditingController();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Pre-fill username from onboarding
+    final onboardingUsername = ref.read(onboardingProvider).username;
+    if (onboardingUsername.isNotEmpty) {
+      _usernameCtrl.text = onboardingUsername;
+    }
+  }
 
   @override
   void dispose() {
@@ -54,7 +67,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
         ),
       );
     } else if (state is AsyncData) {
-      context.go(Routes.home);
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setBool(AppConstants.prefOnboardingDone, true);
+      if (mounted) context.go(Routes.home);
     }
   }
 
@@ -103,10 +118,12 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(RegExp(r'[a-z0-9_\.]')),
                 ],
+                maxLength: AppConstants.usernameMaxLength,
                 validator: Validators.username,
                 decoration: const InputDecoration(
                   labelText: 'Username',
                   prefixIcon: Icon(Icons.alternate_email_rounded),
+                  counterText: '',
                 ),
               ).animate(delay: 200.ms).fadeIn(duration: 400.ms),
               const SizedBox(height: 16),
@@ -169,7 +186,39 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 onPressed: isLoading ? null : _signUp,
               ).animate(delay: 600.ms).fadeIn(duration: 400.ms).slideY(begin: 0.3, end: 0),
 
+              const SizedBox(height: 24),
+
+              // Divider
+              Row(
+                children: [
+                  const Expanded(child: Divider()),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Text(
+                      'or continue with',
+                      style: AppTypography.bodyS(
+                          color: isDark
+                              ? AppColors.darkTextMuted
+                              : AppColors.lightTextMuted),
+                    ),
+                  ),
+                  const Expanded(child: Divider()),
+                ],
+              ).animate(delay: 700.ms).fadeIn(duration: 300.ms),
+
               const SizedBox(height: 16),
+
+              // Google OAuth
+              SortoButton(
+                label: 'Continue with Google',
+                variant: SortoButtonVariant.outline,
+                icon: Icons.g_mobiledata_rounded,
+                onPressed: () => ref
+                    .read(authNotifierProvider.notifier)
+                    .signInWithGoogle(),
+              ).animate(delay: 750.ms).fadeIn(duration: 300.ms),
+
+              const SizedBox(height: 32),
 
               Center(
                 child: Text(
@@ -177,8 +226,32 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   style:
                       AppTypography.bodyS(color: AppColors.darkTextMuted),
                   textAlign: TextAlign.center,
-                ).animate(delay: 700.ms).fadeIn(duration: 300.ms),
+                ).animate(delay: 850.ms).fadeIn(duration: 300.ms),
               ),
+              const SizedBox(height: 24),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    'Already have an account? ',
+                    style: AppTypography.bodyM(
+                        color: isDark
+                            ? AppColors.darkTextSecondary
+                            : AppColors.lightTextSecondary),
+                  ),
+                  GestureDetector(
+                    onTap: () => context.push(Routes.signIn),
+                    child: ShaderMask(
+                      shaderCallback: (bounds) =>
+                          AppColors.brandGradient.createShader(bounds),
+                      child: Text(
+                        'Sign in',
+                        style: AppTypography.labelL(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ).animate(delay: 800.ms).fadeIn(duration: 300.ms),
             ],
           ),
         ),

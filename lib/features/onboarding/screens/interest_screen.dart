@@ -29,8 +29,10 @@ class _InterestScreenState extends ConsumerState<InterestScreen> {
     setState(() {
       _floatingEmojis[category] = true;
     });
-    Future.delayed(const Duration(milliseconds: 800),
-        () => setState(() => _floatingEmojis.remove(category)));
+    Future.delayed(const Duration(milliseconds: 800), () {
+      if (!mounted) return;
+      setState(() => _floatingEmojis.remove(category));
+    });
   }
 
   @override

@@ -1,6 +1,7 @@
 // lib/features/onboarding/screens/splash_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -10,14 +11,14 @@ import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/app_constants.dart';
 import '../../../shared/widgets/sorto_logo.dart';
 
-class SplashScreen extends StatefulWidget {
+class SplashScreen extends ConsumerStatefulWidget {
   const SplashScreen({super.key});
 
   @override
-  State<SplashScreen> createState() => _SplashScreenState();
+  ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void initState() {
     super.initState();
@@ -39,9 +40,15 @@ class _SplashScreenState extends State<SplashScreen> {
     final prefs = await SharedPreferences.getInstance();
     final done = prefs.getBool(AppConstants.prefOnboardingDone) ?? false;
 
+    if (!done) {
+      // If they are logged in but flag is missing, they already have an account.
+      // Set the flag now and move on.
+      await prefs.setBool(AppConstants.prefOnboardingDone, true);
+    }
+
     if (!mounted) return;
 
-    context.go(done ? Routes.home : Routes.usernameOnboarding);
+    context.go(Routes.home);
   }
 
   @override

@@ -23,12 +23,7 @@ class LaunchScreen extends ConsumerStatefulWidget {
 }
 
 class _LaunchScreenState extends ConsumerState<LaunchScreen> {
-  int _typewriterIndex = 0;
-  final List<String> _phrases = [
-    'Your dares.',
-    'Your money.',
-    'Your rules.',
-  ];
+  final List<String> _phrases = ['Your dares.', 'Your money.', 'Your rules.'];
   String _displayed = '';
   bool _showButton = false;
   Timer? _charTimer;
@@ -62,28 +57,25 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen> {
     setState(() => _displayed = '');
     Future.delayed(Duration(milliseconds: phraseIndex == 0 ? 0 : 400), () {
       if (!mounted) return;
-      _charTimer = Timer.periodic(
-        const Duration(milliseconds: 60),
-        (timer) {
-          if (!mounted) {
-            timer.cancel();
-            return;
-          }
-          if (charIndex < phrase.length) {
-            setState(() => _displayed = '$_displayed${phrase[charIndex]}');
-            charIndex++;
-          } else {
-            timer.cancel();
-            Future.delayed(const Duration(milliseconds: 500), () {
-              if (!mounted) return;
-              // Show next phrase below
-              _phaseTimer = Timer(const Duration(milliseconds: 200), () {
-                _typePhrase(phraseIndex + 1);
-              });
+      _charTimer = Timer.periodic(const Duration(milliseconds: 60), (timer) {
+        if (!mounted) {
+          timer.cancel();
+          return;
+        }
+        if (charIndex < phrase.length) {
+          setState(() => _displayed = '$_displayed${phrase[charIndex]}');
+          charIndex++;
+        } else {
+          timer.cancel();
+          Future.delayed(const Duration(milliseconds: 500), () {
+            if (!mounted) return;
+            // Show next phrase below
+            _phaseTimer = Timer(const Duration(milliseconds: 200), () {
+              _typePhrase(phraseIndex + 1);
             });
-          }
-        },
-      );
+          });
+        }
+      });
     });
   }
 
@@ -152,18 +144,19 @@ class _LaunchScreenState extends ConsumerState<LaunchScreen> {
                     offset: _showButton ? Offset.zero : const Offset(0, 0.3),
                     duration: const Duration(milliseconds: 500),
                     curve: Curves.easeOut,
-                    child: SortoButton(
-                      label: 'Enter Sorto →',
-                      onPressed: _launch,
-                      height: 64,
-                    )
-                        .animate(onPlay: (c) => c.repeat(reverse: true))
-                        .scaleXY(
-                          begin: 1.0,
-                          end: 1.02,
-                          duration: 1500.ms,
-                          curve: Curves.easeInOut,
-                        ),
+                    child:
+                        SortoButton(
+                              label: 'Enter Sorto →',
+                              onPressed: _launch,
+                              height: 64,
+                            )
+                            .animate(onPlay: (c) => c.repeat(reverse: true))
+                            .scaleXY(
+                              begin: 1.0,
+                              end: 1.02,
+                              duration: 1500.ms,
+                              curve: Curves.easeInOut,
+                            ),
                   ),
                 ),
 
@@ -204,7 +197,10 @@ class _TypewriterDisplayState extends State<_TypewriterDisplay> {
     int charIndex = 0;
 
     _charTimer = Timer.periodic(const Duration(milliseconds: 60), (t) {
-      if (!mounted) { t.cancel(); return; }
+      if (!mounted) {
+        t.cancel();
+        return;
+      }
       if (charIndex < phrase.length) {
         current += phrase[charIndex];
         charIndex++;
@@ -236,15 +232,16 @@ class _TypewriterDisplayState extends State<_TypewriterDisplay> {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         // Completed phrases (static, with gradient)
-        ..._completed.map((p) => ShaderMask(
-              shaderCallback: (b) =>
-                  AppColors.brandGradient.createShader(b),
-              child: Text(
-                p,
-                style: AppTypography.typewriter(color: Colors.white),
-                textAlign: TextAlign.center,
-              ),
-            ).animate().fadeIn(duration: 300.ms)),
+        ..._completed.map(
+          (p) => ShaderMask(
+            shaderCallback: (b) => AppColors.brandGradient.createShader(b),
+            child: Text(
+              p,
+              style: AppTypography.typewriter(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          ).animate().fadeIn(duration: 300.ms),
+        ),
 
         // Current phrase being typed
         if (_current.isNotEmpty)
@@ -254,7 +251,8 @@ class _TypewriterDisplayState extends State<_TypewriterDisplay> {
               Text(
                 _current,
                 style: AppTypography.typewriter(
-                    color: AppColors.darkTextPrimary),
+                  color: AppColors.darkTextPrimary,
+                ),
                 textAlign: TextAlign.center,
               ),
               // Cursor blink
