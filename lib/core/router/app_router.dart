@@ -47,6 +47,8 @@ import '../../features/notifications/screens/notifications_screen.dart';
 
 // Settings
 import '../../features/settings/screens/settings_screen.dart';
+import '../../features/settings/screens/privacy_policy_screen.dart';
+import '../../features/settings/screens/terms_of_service_screen.dart';
 
 // Admin
 import '../../features/admin/screens/contest_queue_screen.dart';
@@ -138,8 +140,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return Routes.home;
       }
 
-      // Allow unauthenticated access to onboarding and auth screens
-      if (loc.startsWith('/onboarding') || loc.startsWith('/auth')) return null;
+      // Allow unauthenticated access to onboarding, auth, and legal screens
+      if (loc.startsWith('/onboarding') ||
+          loc.startsWith('/auth') ||
+          loc.startsWith('/legal')) {
+        return null;
+      }
 
       // All other routes require authentication
       if (!isLoggedIn) return Routes.signIn;
@@ -296,6 +302,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.adminContestQueue,
         pageBuilder: (ctx, state) => _slidePage(const ContestQueueScreen()),
+      ),
+ 
+      // ─── LEGAL ─────────────────────────────────────────────────────────
+      GoRoute(
+        path: Routes.privacyPolicy,
+        pageBuilder: (ctx, state) => _slidePage(const PrivacyPolicyScreen()),
+      ),
+      GoRoute(
+        path: Routes.termsOfService,
+        pageBuilder: (ctx, state) => _slidePage(const TermsOfServiceScreen()),
       ),
     ],
 

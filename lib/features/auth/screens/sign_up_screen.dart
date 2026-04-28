@@ -221,11 +221,37 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               const SizedBox(height: 32),
 
               Center(
-                child: Text(
-                  'By signing up, you agree to our Terms of Service.',
-                  style:
-                      AppTypography.bodyS(color: AppColors.darkTextMuted),
+                child: RichText(
                   textAlign: TextAlign.center,
+                  text: TextSpan(
+                    style: AppTypography.bodyS(color: AppColors.darkTextMuted),
+                    children: [
+                      const TextSpan(text: 'By signing up, you agree to our '),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: GestureDetector(
+                          onTap: () => context.push(Routes.termsOfService),
+                          child: Text(
+                            'Terms',
+                            style:
+                                AppTypography.bodyS(color: AppColors.primary),
+                          ),
+                        ),
+                      ),
+                      const TextSpan(text: ' and '),
+                      WidgetSpan(
+                        alignment: PlaceholderAlignment.middle,
+                        child: GestureDetector(
+                          onTap: () => context.push(Routes.privacyPolicy),
+                          child: Text(
+                            'Privacy Policy.',
+                            style:
+                                AppTypography.bodyS(color: AppColors.primary),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ).animate(delay: 850.ms).fadeIn(duration: 300.ms),
               ),
               const SizedBox(height: 24),

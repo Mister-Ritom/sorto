@@ -84,12 +84,12 @@ class SettingsScreen extends ConsumerWidget {
           _SettingsTile(
             icon: Icons.description_rounded,
             title: 'Terms of Service',
-            onTap: () {},
+            onTap: () => context.push(Routes.termsOfService),
           ).animate(delay: 450.ms).fadeIn().slideX(begin: 0.1, end: 0),
           _SettingsTile(
             icon: Icons.privacy_tip_rounded,
             title: 'Privacy Policy',
-            onTap: () {},
+            onTap: () => context.push(Routes.privacyPolicy),
           ).animate(delay: 500.ms).fadeIn().slideX(begin: 0.1, end: 0),
           const SizedBox(height: 32),
 
