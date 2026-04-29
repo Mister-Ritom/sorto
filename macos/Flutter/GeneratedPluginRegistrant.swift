@@ -7,6 +7,7 @@ import Foundation
 
 import app_links
 import file_selector_macos
+import firebase_core
 import flutter_inappwebview_macos
 import package_info_plus
 import purchases_flutter
@@ -18,6 +19,7 @@ import video_player_avfoundation
 func RegisterGeneratedPlugins(registry: FlutterPluginRegistry) {
   AppLinksMacosPlugin.register(with: registry.registrar(forPlugin: "AppLinksMacosPlugin"))
   FileSelectorPlugin.register(with: registry.registrar(forPlugin: "FileSelectorPlugin"))
+  FLTFirebaseCorePlugin.register(with: registry.registrar(forPlugin: "FLTFirebaseCorePlugin"))
   InAppWebViewFlutterPlugin.register(with: registry.registrar(forPlugin: "InAppWebViewFlutterPlugin"))
   FPPPackageInfoPlusPlugin.register(with: registry.registrar(forPlugin: "FPPPackageInfoPlusPlugin"))
   PurchasesFlutterPlugin.register(with: registry.registrar(forPlugin: "PurchasesFlutterPlugin"))

@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "884254093205",
+    "project_id": "sorto-dares",
+    "storage_bucket": "sorto-dares.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:884254093205:android:47d62cdf66d50fbace109c",
+        "android_client_info": {
+          "package_name": "me.ritom.sorto"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "884254093205-p1j9r35j37n9n3uga44kj1socvh442je.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "me.ritom.sorto",
+            "certificate_hash": "9c59dd296a52a40c09300df3a11549dc3e89159b"
+          }
+        },
+        {
+          "client_id": "884254093205-ooq7v12dm10hsp3qcrg4r939575tcra3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWJn-QqzfTuvRxSuLGQxBeoaVahV-7DeY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "884254093205-ooq7v12dm10hsp3qcrg4r939575tcra3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "884254093205-tvnlarva4etqjoahthnmrj1fo3psv04i.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "me.ritom.sorto"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
