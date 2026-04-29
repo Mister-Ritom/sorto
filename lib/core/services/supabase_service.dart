@@ -1,6 +1,7 @@
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import '../../shared/models/dare.dart';
 import '../../shared/models/profile.dart';
 import '../../shared/models/wallet.dart';
@@ -34,20 +35,55 @@ class SupabaseService {
       _client.auth.signInWithPassword(email: email, password: password);
 
   Future<AuthResponse> signUpWithEmail(
-          String email, String password, String username) async =>
-      _client.auth.signUp(
-        email: email,
-        password: password,
-        data: {'username': username},
-      );
+    String email,
+    String password,
+    String username,
+  ) async => _client.auth.signUp(
+    email: email,
+    password: password,
+    data: {'username': username},
+  );
 
   Future<void> signOut() => _client.auth.signOut();
 
   Future<void> resetPassword(String email) =>
       _client.auth.resetPasswordForEmail(email);
 
-  Future<bool> signInWithGoogle() =>
-      _client.auth.signInWithOAuth(OAuthProvider.google);
+  Future<AuthResponse> signInWithGoogle() async {
+    const webClientId = ApiConstants.googleWebClientId;
+    const iosClientId = ApiConstants.googleIosClientId;
+
+    // In google_sign_in 7.x+, you use the singleton instance and initialize it first.
+    await GoogleSignIn.instance.initialize(
+      clientId: kIsWeb ? webClientId : iosClientId,
+      serverClientId: webClientId,
+    );
+
+    // 1. Authenticate to get identity info
+    final googleUser = await GoogleSignIn.instance.authenticate();
+
+    // 2. Authorize scopes to get the accessToken (required for Supabase)
+    final authorization = await googleUser.authorizationClient.authorizeScopes([
+      'openid',
+      'email',
+      'profile',
+    ]);
+
+    // 3. Get the ID Token (authentication)
+    final googleAuth = googleUser.authentication;
+    final idToken = googleAuth.idToken;
+    final accessToken = authorization.accessToken;
+
+    if (idToken == null) {
+      throw 'No Google ID Token found.';
+    }
+
+    return _client.auth.signInWithIdToken(
+      provider: OAuthProvider.google,
+      idToken: idToken,
+      accessToken: accessToken,
+    );
+  }
 
   // ─── PROFILES ────────────────────────────────────────────────────────────
   Future<Profile?> getProfile(String userId) async {
@@ -121,17 +157,16 @@ class SupabaseService {
     int offset = 0,
     String? type,
   }) async {
-    var query = _client
-        .from('transactions')
-        .select()
-        .eq('user_id', userId);
+    var query = _client.from('transactions').select().eq('user_id', userId);
     if (type != null) {
       query = query.eq('type', type);
     }
     final data = await query
         .order('created_at', ascending: false)
         .range(offset, offset + limit - 1);
-    return data.map<SortoTransaction>((e) => SortoTransaction.fromJson(e)).toList();
+    return data
+        .map<SortoTransaction>((e) => SortoTransaction.fromJson(e))
+        .toList();
   }
 
   // ─── DARES ───────────────────────────────────────────────────────────────
@@ -164,7 +199,8 @@ class SupabaseService {
     final data = await _client
         .from('dares')
         .select(
-            '*, profiles!poster_id(username, avatar_url, display_name), dare_submissions(count)')
+          '*, profiles!poster_id(username, avatar_url, display_name), dare_submissions(count)',
+        )
         .eq('id', dareId)
         .maybeSingle();
     if (data == null) return null;
@@ -181,7 +217,8 @@ class SupabaseService {
         .stream(primaryKey: ['id'])
         .eq('status', 'open');
     return query.map<List<Dare>>(
-        (rows) => rows.map<Dare>((e) => Dare.fromJson(e)).toList());
+      (rows) => rows.map<Dare>((e) => Dare.fromJson(e)).toList(),
+    );
   }
 
   Future<List<DareSubmission>> getDareSubmissions(String dareId) async {
@@ -193,8 +230,7 @@ class SupabaseService {
     return data.map<DareSubmission>((e) => DareSubmission.fromJson(e)).toList();
   }
 
-  Future<DareSubmission?> getMySubmission(
-      String dareId, String userId) async {
+  Future<DareSubmission?> getMySubmission(String dareId, String userId) async {
     final data = await _client
         .from('dare_submissions')
         .select()
@@ -228,8 +264,7 @@ class SupabaseService {
   Future<PerformerPost?> getPerformerPost(String postId) async {
     final data = await _client
         .from('performer_posts')
-        .select(
-            '*, profiles!performer_id(username, avatar_url, display_name)')
+        .select('*, profiles!performer_id(username, avatar_url, display_name)')
         .eq('id', postId)
         .maybeSingle();
     if (data == null) return null;
@@ -247,7 +282,9 @@ class SupabaseService {
         .eq('user_id', userId)
         .order('created_at', ascending: false)
         .limit(limit);
-    return data.map<SortoNotification>((e) => SortoNotification.fromJson(e)).toList();
+    return data
+        .map<SortoNotification>((e) => SortoNotification.fromJson(e))
+        .toList();
   }
 
   Future<int> getUnreadNotificationCount(String userId) async {
@@ -283,7 +320,9 @@ class SupabaseService {
         .order('created_at', ascending: false)
         .limit(50)
         .map<List<SortoNotification>>(
-          (rows) => rows.map<SortoNotification>((e) => SortoNotification.fromJson(e)).toList(),
+          (rows) => rows
+              .map<SortoNotification>((e) => SortoNotification.fromJson(e))
+              .toList(),
         );
   }
 
@@ -292,10 +331,7 @@ class SupabaseService {
     String name, {
     Map<String, dynamic>? body,
   }) async {
-    final response = await _client.functions.invoke(
-      name,
-      body: body,
-    );
+    final response = await _client.functions.invoke(name, body: body);
     if (response.data is Map<String, dynamic>) {
       return response.data as Map<String, dynamic>;
     }
@@ -312,37 +348,35 @@ class SupabaseService {
     required String dareId,
     required String videoPath,
     String? proofText,
-  }) =>
-      invokeFunction(ApiConstants.fnDareSubmitProof, body: {
-        'dare_id': dareId,
-        'video_path': videoPath,
-        'proof_text': proofText,
-      });
+  }) => invokeFunction(
+    ApiConstants.fnDareSubmitProof,
+    body: {'dare_id': dareId, 'video_path': videoPath, 'proof_text': proofText},
+  );
 
   Future<Map<String, dynamic>> settleDare({
     required String dareId,
     required String submissionId,
     required String verdict, // 'approved' | 'rejected' | 'winner'
     String? reason,
-  }) =>
-      invokeFunction(ApiConstants.fnDareSettle, body: {
-        'dare_id': dareId,
-        'submission_id': submissionId,
-        'verdict': verdict,
-        'reason': reason,
-      });
+  }) => invokeFunction(
+    ApiConstants.fnDareSettle,
+    body: {
+      'dare_id': dareId,
+      'submission_id': submissionId,
+      'verdict': verdict,
+      'reason': reason,
+    },
+  );
 
   Future<Map<String, dynamic>> initiateWithdrawal({
     required int coinAmount,
     required String upiId,
-  }) =>
-      invokeFunction(ApiConstants.fnWithdrawalInitiate, body: {
-        'coin_amount': coinAmount,
-        'upi_id': upiId,
-      });
+  }) => invokeFunction(
+    ApiConstants.fnWithdrawalInitiate,
+    body: {'coin_amount': coinAmount, 'upi_id': upiId},
+  );
 
-  Future<Map<String, dynamic>> createPerformerPost(
-          Map<String, dynamic> data) =>
+  Future<Map<String, dynamic>> createPerformerPost(Map<String, dynamic> data) =>
       invokeFunction(ApiConstants.fnPerformerPostCreate, body: data);
 
   // ─── STORAGE ──────────────────────────────────────────────────────────────
@@ -353,12 +387,18 @@ class SupabaseService {
   }) async {
     await _client.storage
         .from(ApiConstants.videoBucket)
-        .uploadBinary(filePath, Uint8List.fromList(bytes), fileOptions: FileOptions(contentType: mimeType));
+        .uploadBinary(
+          filePath,
+          Uint8List.fromList(bytes),
+          fileOptions: FileOptions(contentType: mimeType),
+        );
     return filePath;
   }
 
-  Future<String> getSignedVideoUrl(String path,
-      {Duration expiry = const Duration(minutes: 15)}) async {
+  Future<String> getSignedVideoUrl(
+    String path, {
+    Duration expiry = const Duration(minutes: 15),
+  }) async {
     return await _client.storage
         .from(ApiConstants.videoBucket)
         .createSignedUrl(path, expiry.inSeconds);
@@ -368,9 +408,14 @@ class SupabaseService {
     final path = '$userId/avatar.jpg';
     await _client.storage
         .from(ApiConstants.avatarBucket)
-        .uploadBinary(path, Uint8List.fromList(bytes),
-            fileOptions: const FileOptions(
-                contentType: 'image/jpeg', upsert: true));
+        .uploadBinary(
+          path,
+          Uint8List.fromList(bytes),
+          fileOptions: const FileOptions(
+            contentType: 'image/jpeg',
+            upsert: true,
+          ),
+        );
     return _client.storage.from(ApiConstants.avatarBucket).getPublicUrl(path);
   }
 }

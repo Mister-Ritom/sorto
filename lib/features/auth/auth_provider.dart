@@ -48,19 +48,8 @@ class AuthNotifier extends Notifier<AsyncValue<void>> {
 
   Future<void> signUp(String email, String password, String username) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() async {
-      final authResp = await _svc.signUpWithEmail(email, password, username);
-      if (authResp.user != null) {
-        await _svc.upsertProfile({
-          'id': authResp.user!.id,
-          'username': username,
-          'display_name': username,
-          'reputation_score': 0,
-          'total_dares_posted': 0,
-          'total_dares_completed': 0,
-        });
-      }
-    });
+    state = await AsyncValue.guard(
+        () => _svc.signUpWithEmail(email, password, username));
   }
 
   Future<void> signOut() async {

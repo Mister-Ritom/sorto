@@ -46,4 +46,10 @@ class ApiConstants {
   // Rate limits (client-side optimistic)
   static const int maxDareCreatePerDay = 10;
   static const int maxClaimPerDay = 20;
+
+  // Google Auth
+  static const String googleWebClientId =
+      '884254093205-ooq7v12dm10hsp3qcrg4r939575tcra3.apps.googleusercontent.com';
+  static const String googleIosClientId =
+      '884254093205-tvnlarva4etqjoahthnmrj1fo3psv04i.apps.googleusercontent.com';
 }
