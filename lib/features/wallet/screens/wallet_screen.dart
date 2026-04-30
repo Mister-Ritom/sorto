@@ -16,6 +16,7 @@ import '../../../shared/widgets/skeleton_loader.dart';
 import '../payment_provider.dart';
 import '../wallet_provider.dart';
 import 'package:sorto/core/extensions/color_extensions.dart';
+import 'package:sorto/core/extensions/error_extensions.dart';
 
 class WalletScreen extends ConsumerWidget {
   const WalletScreen({super.key});
@@ -50,7 +51,12 @@ class WalletScreen extends ConsumerWidget {
                   child: SkeletonBox(width: double.infinity, height: 200),
                 ),
                 error: (e, st) {
-                  dev.log('Error loading wallet balance', error: e, stackTrace: st, name: 'WalletScreen');
+                  dev.log(
+                    'Error loading wallet balance',
+                    error: e,
+                    stackTrace: st,
+                    name: 'WalletScreen',
+                  );
                   return const SizedBox.shrink();
                 },
                 data: (wallet) => _BalanceCard(
@@ -198,18 +204,25 @@ void _showCoinPicker(BuildContext context, WidgetRef ref) {
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
-    builder: (_) => _CoinPickerSheet(ref: ref),
+    builder: (_) => const _CoinPickerSheet(),
   );
 }
 
-class _CoinPickerSheet extends ConsumerWidget {
-  const _CoinPickerSheet({required this.ref});
-  final WidgetRef ref;
+class _CoinPickerSheet extends ConsumerStatefulWidget {
+  const _CoinPickerSheet();
 
   @override
-  Widget build(BuildContext context, WidgetRef widgetRef) {
-    final offeringsAsync = widgetRef.watch(revenueCatOfferingsProvider);
-    final paymentState = widgetRef.watch(paymentProvider);
+  ConsumerState<_CoinPickerSheet> createState() => _CoinPickerSheetState();
+}
+
+class _CoinPickerSheetState extends ConsumerState<_CoinPickerSheet> {
+  String? _localError;
+
+  @override
+  Widget build(BuildContext context) {
+    final offeringsAsync = ref.watch(revenueCatOfferingsProvider);
+    final paymentState = ref.watch(paymentProvider);
+    final accuratePricesAsync = ref.watch(razorpayPricesProvider);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return DraggableScrollableSheet(
@@ -259,6 +272,33 @@ class _CoinPickerSheet extends ConsumerWidget {
                 ),
               ),
             ),
+            if (_localError != null)
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                child: Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withOpacityNew(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.error_outline_rounded,
+                        color: AppColors.error,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          _localError!,
+                          style: AppTypography.bodyS(color: AppColors.error),
+                        ),
+                      ),
+                    ],
+                  ),
+                ).animate().shake(duration: 400.ms),
+              ),
             const SizedBox(height: 12),
             Expanded(
               child: ListView.separated(
@@ -283,18 +323,18 @@ class _CoinPickerSheet extends ConsumerWidget {
                             );
                         priceLabel = pkg.storeProduct.priceString;
                       } catch (e, st) {
-                        dev.log('Error finding RevenueCat package for tier ${tier.revenueCatId}',
-                            error: e, stackTrace: st, name: 'WalletScreen');
+                        dev.log(
+                          'Error finding RevenueCat package for tier ${tier.revenueCatId}',
+                          error: e,
+                          stackTrace: st,
+                          name: 'WalletScreen',
+                        );
                       }
                     }
                   }
 
                   // If still using fallback label, try to get the accurate one from the backend
                   if (priceLabel == tier.razorpayPriceLabel) {
-                    final accuratePricesAsync = widgetRef.watch(
-                      razorpayPricesProvider,
-                    );
-
                     priceLabel = accuratePricesAsync.when(
                       data: (prices) =>
                           prices[tier.coins] ?? tier.razorpayPriceLabel,
@@ -303,41 +343,47 @@ class _CoinPickerSheet extends ConsumerWidget {
                     );
                   }
 
+                  final isPricesLoading = accuratePricesAsync.isLoading;
+
                   return _TierCard(
                     tier: tier,
                     priceLabel: priceLabel,
-                    isLoading: paymentState.isLoading,
-                    onTap: () async {
-                      final result = await widgetRef
-                          .read(paymentProvider.notifier)
-                          .purchaseTier(tier, context);
+                    isLoading: paymentState.isLoading || isPricesLoading,
+                    onTap: (isPricesLoading || paymentState.isLoading)
+                        ? null
+                        : () async {
+                            setState(() => _localError = null);
+                            final result = await ref
+                                .read(paymentProvider.notifier)
+                                .purchaseTier(tier, context);
 
-                      if (!context.mounted) return;
-                      switch (result) {
-                        case PaymentSuccess(:final coinsAdded):
-                          Navigator.of(context).pop(); // Force close sheet
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('⚡ $coinsAdded coins added!'),
-                              backgroundColor: AppColors.success,
-                            ),
-                          );
-                          // Refresh everything
-                          widgetRef.invalidate(walletStreamProvider);
-                          widgetRef
-                              .read(transactionProvider.notifier)
-                              .load(refresh: true);
-                        case PaymentCancelled():
-                          break;
-                        case PaymentFailed(:final reason):
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('Payment failed: $reason'),
-                              backgroundColor: AppColors.error,
-                            ),
-                          );
-                      }
-                    },
+                            if (!mounted) return;
+
+                            switch (result) {
+                              case PaymentSuccess(:final coinsAdded):
+                                // Using this.context ensures we are using the context tied to the State
+                                Navigator.pop(this.context);
+
+                                if (mounted) {
+                                  this.context.showSuccessSnackBar(
+                                    '⚡ $coinsAdded coins added!',
+                                  );
+                                }
+
+                                // Refresh everything
+                                ref.invalidate(walletStreamProvider);
+                                ref
+                                    .read(transactionProvider.notifier)
+                                    .load(refresh: true);
+                              case PaymentCancelled():
+                                break;
+                              case PaymentFailed(:final reason):
+                                setState(
+                                  () => _localError = reason
+                                      .toUserFriendlyMessage(),
+                                );
+                            }
+                          },
                   );
                 },
               ),
@@ -354,12 +400,12 @@ class _TierCard extends StatelessWidget {
     required this.tier,
     required this.priceLabel,
     required this.isLoading,
-    required this.onTap,
+    this.onTap,
   });
   final CoinTier tier;
   final String priceLabel;
   final bool isLoading;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {

@@ -1,4 +1,4 @@
-// lib/features/auth/auth_provider.dart
+import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/services/supabase_service.dart';
@@ -40,32 +40,54 @@ class AuthNotifier extends Notifier<AsyncValue<void>> {
 
   SupabaseService get _svc => ref.read(supabaseServiceProvider);
 
-  Future<void> signIn(String email, String password) async {
+  Future<void> _performAuth(Future<dynamic> Function() action, String name) async {
     state = const AsyncValue.loading();
-    state = await AsyncValue.guard(
-        () => _svc.signInWithEmail(email, password).then((_) {}));
+    try {
+      await action();
+      state = const AsyncValue.data(null);
+    } catch (e, st) {
+      dev.log('Auth error: $name', error: e, stackTrace: st, name: 'AuthNotifier');
+      state = AsyncValue.error(e, st);
+    }
+  }
+
+  Future<void> signIn(String email, String password) async {
+    await _performAuth(() => _svc.signInWithEmail(email, password), 'signIn');
   }
 
   Future<void> signUp(String email, String password, String username) async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(
-        () => _svc.signUpWithEmail(email, password, username));
+    await _performAuth(
+      () => _svc.signUpWithEmail(email, password, username),
+      'signUp',
+    );
   }
 
   Future<void> signOut() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _svc.signOut());
+    await _performAuth(() => _svc.signOut(), 'signOut');
   }
 
   Future<void> resetPassword(String email) async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(() => _svc.resetPassword(email));
+    await _performAuth(() => _svc.resetPassword(email), 'resetPassword');
   }
 
   Future<void> signInWithGoogle() async {
-    state = const AsyncValue.loading();
-    state = await AsyncValue.guard(
-        () => _svc.signInWithGoogle().then((_) {}));
+    await _performAuth(() => _svc.signInWithGoogle(), 'signInWithGoogle');
+  }
+
+  Future<void> disableAccount() async {
+    final userId = _svc.currentUserId;
+    if (userId == null) return;
+    await _performAuth(() => _svc.disableAccount(userId), 'disableAccount');
+    if (!state.hasError) {
+      await signOut();
+    }
+  }
+
+  Future<void> enableAccount() async {
+    final userId = _svc.currentUserId;
+    if (userId == null) return;
+    await _performAuth(() => _svc.enableAccount(userId), 'enableAccount');
+    ref.invalidate(currentProfileProvider);
   }
 }
 

@@ -13,6 +13,8 @@ import '../../../shared/widgets/sorto_button.dart';
 import '../../../core/services/pwa_service.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:sorto/core/extensions/color_extensions.dart';
+import 'package:sorto/core/extensions/error_extensions.dart';
+import '../../profile/widgets/edit_profile_sheet.dart';
 
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
@@ -42,7 +44,9 @@ class SettingsScreen extends ConsumerWidget {
               username: '@${profile?.username ?? 'username'}',
               avatarUrl: profile?.avatarUrl,
               onTap: () {
-                // TODO: Edit Profile
+                if (profile != null) {
+                  EditProfileSheet.show(context, profile);
+                }
               },
             ).animate().scale(curve: Curves.elasticOut, duration: 600.ms),
             loading: () => const _LoadingTile(),
@@ -140,7 +144,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: 16),
           Center(
             child: TextButton(
-              onPressed: () => _showDeleteAccountDialog(context),
+              onPressed: () => _showDeleteAccountDialog(context, ref),
               child: Text(
                 'Delete Account',
                 style: AppTypography.bodyM(color: AppColors.error),
@@ -255,7 +259,7 @@ class SettingsScreen extends ConsumerWidget {
     );
   }
 
-  void _showDeleteAccountDialog(BuildContext context) {
+  void _showDeleteAccountDialog(BuildContext context, WidgetRef ref) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -272,9 +276,16 @@ class SettingsScreen extends ConsumerWidget {
             child: const Text('Keep My Account'),
           ),
           TextButton(
-            onPressed: () {
-              // TODO: Implement account deletion logic
+            onPressed: () async {
               Navigator.pop(ctx);
+              // Show loading or just disable
+              await ref.read(authNotifierProvider.notifier).disableAccount();
+              if (context.mounted) {
+                context.go(Routes.signIn);
+                context.showSuccessSnackBar(
+                  'Account disabled. It will be deleted in 90 days.',
+                );
+              }
             },
             child: const Text(
               'Delete',

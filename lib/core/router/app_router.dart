@@ -8,6 +8,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../features/auth/screens/sign_in_screen.dart';
 import '../../features/auth/screens/sign_up_screen.dart';
 import '../../features/auth/screens/forgot_password_screen.dart';
+import '../../features/auth/screens/disabled_account_screen.dart';
 
 // Onboarding
 import '../../features/onboarding/screens/splash_screen.dart';
@@ -70,6 +71,7 @@ class Routes {
   static const signIn = '/auth/sign-in';
   static const signUp = '/auth/sign-up';
   static const forgotPassword = '/auth/forgot-password';
+  static const disabledAccount = '/auth/disabled';
 
   static const home = '/home';
   static const search = '/search';
@@ -205,6 +207,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: Routes.forgotPassword,
         pageBuilder: (ctx, state) => _slidePage(const ForgotPasswordScreen()),
+      ),
+      GoRoute(
+        path: Routes.disabledAccount,
+        pageBuilder: (ctx, state) => _fadePage(const DisabledAccountScreen()),
       ),
 
       // ─── HOME / SEARCH ─────────────────────────────────────────────────

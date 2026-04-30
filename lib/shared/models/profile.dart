@@ -13,6 +13,8 @@ class Profile {
   final int totalDaresCompleted;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool isDisabled;
+  final DateTime? disabledAt;
 
   const Profile({
     required this.id,
@@ -27,6 +29,8 @@ class Profile {
     required this.totalDaresCompleted,
     required this.createdAt,
     required this.updatedAt,
+    this.isDisabled = false,
+    this.disabledAt,
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) => Profile(
@@ -42,6 +46,10 @@ class Profile {
         totalDaresCompleted: json['total_dares_completed'] as int? ?? 0,
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: DateTime.parse(json['updated_at'] as String),
+        isDisabled: json['is_disabled'] as bool? ?? false,
+        disabledAt: json['disabled_at'] != null
+            ? DateTime.parse(json['disabled_at'] as String)
+            : null,
       );
 
   Map<String, dynamic> toJson() => {
@@ -57,6 +65,8 @@ class Profile {
         'total_dares_completed': totalDaresCompleted,
         'created_at': createdAt.toIso8601String(),
         'updated_at': updatedAt.toIso8601String(),
+        'is_disabled': isDisabled,
+        'disabled_at': disabledAt?.toIso8601String(),
       };
 
   Profile copyWith({
@@ -69,6 +79,8 @@ class Profile {
     int? reputationScore,
     int? totalDaresPosted,
     int? totalDaresCompleted,
+    bool? isDisabled,
+    DateTime? disabledAt,
   }) =>
       Profile(
         id: id,
@@ -83,6 +95,8 @@ class Profile {
         totalDaresCompleted: totalDaresCompleted ?? this.totalDaresCompleted,
         createdAt: createdAt,
         updatedAt: DateTime.now(),
+        isDisabled: isDisabled ?? this.isDisabled,
+        disabledAt: disabledAt ?? this.disabledAt,
       );
 
   @override

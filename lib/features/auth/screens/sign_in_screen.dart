@@ -5,6 +5,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sorto/core/services/supabase_service.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
@@ -13,6 +14,7 @@ import '../../../shared/widgets/sorto_button.dart';
 import '../../../shared/widgets/sorto_logo.dart';
 import '../auth_provider.dart';
 import 'package:sorto/core/extensions/color_extensions.dart';
+import 'package:sorto/core/extensions/error_extensions.dart';
 
 class SignInScreen extends ConsumerStatefulWidget {
   const SignInScreen({super.key});
@@ -44,13 +46,17 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     if (!mounted) return;
     final state = ref.read(authNotifierProvider);
     if (state is AsyncError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.error.toString()),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showErrorSnackBar(state.error);
     } else if (state is AsyncData) {
+      final svc = ref.read(supabaseServiceProvider);
+      final userId = svc.currentUserId;
+      if (userId != null) {
+        final profile = await svc.getProfile(userId);
+        if (profile?.isDisabled ?? false) {
+          if (mounted) context.go(Routes.disabledAccount);
+          return;
+        }
+      }
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('onboarding_done', true);
       if (mounted) context.go(Routes.home);

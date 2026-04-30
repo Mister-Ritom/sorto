@@ -119,6 +119,10 @@ class SupabaseService {
     await _client.from('profiles').upsert(data);
   }
 
+  Future<void> updateProfile(String userId, Map<String, dynamic> data) async {
+    await _client.from('profiles').update(data).eq('id', userId);
+  }
+
   Future<List<Profile>> searchProfiles(String query, {int limit = 20}) async {
     final data = await _client
         .from('profiles')
@@ -126,6 +130,20 @@ class SupabaseService {
         .or('username.ilike.%$query%,display_name.ilike.%$query%')
         .limit(limit);
     return data.map<Profile>((e) => Profile.fromJson(e)).toList();
+  }
+
+  Future<void> disableAccount(String userId) async {
+    await _client.from('profiles').update({
+      'is_disabled': true,
+      'disabled_at': DateTime.now().toIso8601String(),
+    }).eq('id', userId);
+  }
+
+  Future<void> enableAccount(String userId) async {
+    await _client.from('profiles').update({
+      'is_disabled': false,
+      'disabled_at': null,
+    }).eq('id', userId);
   }
 
   // ─── WALLET ──────────────────────────────────────────────────────────────

@@ -13,6 +13,7 @@ import '../../../core/utils/validators.dart';
 import '../../../shared/widgets/sorto_button.dart';
 import '../auth_provider.dart';
 import '../../onboarding/onboarding_provider.dart';
+import 'package:sorto/core/extensions/error_extensions.dart';
 
 class SignUpScreen extends ConsumerStatefulWidget {
   const SignUpScreen({super.key});
@@ -52,7 +53,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
   Future<void> _signUp() async {
     if (!_formKey.currentState!.validate()) return;
     HapticFeedback.mediumImpact();
-    await ref.read(authNotifierProvider.notifier).signUp(
+    await ref
+        .read(authNotifierProvider.notifier)
+        .signUp(
           _emailCtrl.text.trim(),
           _passwordCtrl.text,
           _usernameCtrl.text.trim().toLowerCase(),
@@ -60,12 +63,7 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
     if (!mounted) return;
     final state = ref.read(authNotifierProvider);
     if (state is AsyncError) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(state.error.toString()),
-          backgroundColor: AppColors.error,
-        ),
-      );
+      context.showErrorSnackBar(state.error);
     } else if (state is AsyncData) {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool(AppConstants.prefOnboardingDone, true);
@@ -97,17 +95,19 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               Text(
                 'Join Sorto.',
                 style: AppTypography.displayS(
-                    color: isDark
-                        ? AppColors.darkTextPrimary
-                        : AppColors.lightTextPrimary),
+                  color: isDark
+                      ? AppColors.darkTextPrimary
+                      : AppColors.lightTextPrimary,
+                ),
               ).animate().fadeIn(duration: 400.ms).slideY(begin: 0.3, end: 0),
               const SizedBox(height: 6),
               Text(
                 'Dare. Perform. Earn.',
                 style: AppTypography.bodyM(
-                    color: isDark
-                        ? AppColors.darkTextSecondary
-                        : AppColors.lightTextSecondary),
+                  color: isDark
+                      ? AppColors.darkTextSecondary
+                      : AppColors.lightTextSecondary,
+                ),
               ).animate(delay: 100.ms).fadeIn(duration: 400.ms),
               const SizedBox(height: 36),
 
@@ -150,9 +150,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   labelText: 'Password',
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscurePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined),
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
                     onPressed: () =>
                         setState(() => _obscurePassword = !_obscurePassword),
                   ),
@@ -170,9 +172,11 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   labelText: 'Confirm Password',
                   prefixIcon: const Icon(Icons.lock_outline_rounded),
                   suffixIcon: IconButton(
-                    icon: Icon(_obscureConfirm
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined),
+                    icon: Icon(
+                      _obscureConfirm
+                          ? Icons.visibility_outlined
+                          : Icons.visibility_off_outlined,
+                    ),
                     onPressed: () =>
                         setState(() => _obscureConfirm = !_obscureConfirm),
                   ),
@@ -181,10 +185,13 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
               const SizedBox(height: 32),
 
               SortoButton(
-                label: 'Create Account',
-                isLoading: isLoading,
-                onPressed: isLoading ? null : _signUp,
-              ).animate(delay: 600.ms).fadeIn(duration: 400.ms).slideY(begin: 0.3, end: 0),
+                    label: 'Create Account',
+                    isLoading: isLoading,
+                    onPressed: isLoading ? null : _signUp,
+                  )
+                  .animate(delay: 600.ms)
+                  .fadeIn(duration: 400.ms)
+                  .slideY(begin: 0.3, end: 0),
 
               const SizedBox(height: 24),
 
@@ -197,9 +204,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                     child: Text(
                       'or continue with',
                       style: AppTypography.bodyS(
-                          color: isDark
-                              ? AppColors.darkTextMuted
-                              : AppColors.lightTextMuted),
+                        color: isDark
+                            ? AppColors.darkTextMuted
+                            : AppColors.lightTextMuted,
+                      ),
                     ),
                   ),
                   const Expanded(child: Divider()),
@@ -213,9 +221,8 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                 label: 'Continue with Google',
                 variant: SortoButtonVariant.outline,
                 icon: Icons.g_mobiledata_rounded,
-                onPressed: () => ref
-                    .read(authNotifierProvider.notifier)
-                    .signInWithGoogle(),
+                onPressed: () =>
+                    ref.read(authNotifierProvider.notifier).signInWithGoogle(),
               ).animate(delay: 750.ms).fadeIn(duration: 300.ms),
 
               const SizedBox(height: 32),
@@ -233,8 +240,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           onTap: () => context.push(Routes.termsOfService),
                           child: Text(
                             'Terms',
-                            style:
-                                AppTypography.bodyS(color: AppColors.primary),
+                            style: AppTypography.bodyS(
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ),
@@ -245,8 +253,9 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                           onTap: () => context.push(Routes.privacyPolicy),
                           child: Text(
                             'Privacy Policy.',
-                            style:
-                                AppTypography.bodyS(color: AppColors.primary),
+                            style: AppTypography.bodyS(
+                              color: AppColors.primary,
+                            ),
                           ),
                         ),
                       ),
@@ -261,9 +270,10 @@ class _SignUpScreenState extends ConsumerState<SignUpScreen> {
                   Text(
                     'Already have an account? ',
                     style: AppTypography.bodyM(
-                        color: isDark
-                            ? AppColors.darkTextSecondary
-                            : AppColors.lightTextSecondary),
+                      color: isDark
+                          ? AppColors.darkTextSecondary
+                          : AppColors.lightTextSecondary,
+                    ),
                   ),
                   GestureDetector(
                     onTap: () => context.push(Routes.signIn),

@@ -56,5 +56,11 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Sorto needs access to your photo library to let you pick a profile picture.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Sorto needs access to your camera to let you take a profile picture and record dare proof videos.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Sorto needs access to your microphone when recording dare proof videos.</string>
 </dict>
 </plist>

@@ -7,6 +7,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../shared/widgets/skeleton_loader.dart';
 import '../profile_provider.dart';
+import '../widgets/edit_profile_sheet.dart';
 import '../widgets/profile_widgets.dart';
 
 class OwnProfileScreen extends ConsumerStatefulWidget {
@@ -65,9 +66,7 @@ class _OwnProfileScreenState extends ConsumerState<OwnProfileScreen>
                 child: ProfileHeader(
                   profile: profile,
                   isOwn: true,
-                  onEditTap: () {
-                    // TODO: Edit profile sheet
-                  },
+                  onEditTap: () => EditProfileSheet.show(context, profile),
                 ),
               ),
               SliverPersistentHeader(

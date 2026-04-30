@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sorto/core/services/supabase_service.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
@@ -33,6 +34,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     // Not logged in → start of onboarding
     if (user == null) {
       context.go(Routes.hookOnboarding);
+      return;
+    }
+
+    // Logged in → check if account is disabled
+    final svc = ref.read(supabaseServiceProvider);
+    final profile = await svc.getProfile(user.id);
+
+    if (profile?.isDisabled ?? false) {
+      if (!mounted) return;
+      context.go(Routes.disabledAccount);
       return;
     }
 
@@ -73,9 +84,11 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             const SizedBox(height: 28),
 
             Text(
-              'Sorto',
-              style: AppTypography.displayL(color: AppColors.darkTextPrimary),
-            )
+                  'Sorto',
+                  style: AppTypography.displayL(
+                    color: AppColors.darkTextPrimary,
+                  ),
+                )
                 .animate(delay: 400.ms)
                 .fadeIn(duration: 500.ms)
                 .slideY(begin: 0.3, end: 0, curve: Curves.easeOut),
@@ -83,13 +96,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             const SizedBox(height: 12),
 
             ShaderMask(
-              shaderCallback: (bounds) =>
-                  AppColors.brandGradient.createShader(bounds),
-              child: Text(
-                AppConstants.tagline,
-                style: AppTypography.bodyL(color: Colors.white),
-              ),
-            )
+                  shaderCallback: (bounds) =>
+                      AppColors.brandGradient.createShader(bounds),
+                  child: Text(
+                    AppConstants.tagline,
+                    style: AppTypography.bodyL(color: Colors.white),
+                  ),
+                )
                 .animate(delay: 800.ms)
                 .fadeIn(duration: 500.ms)
                 .then(delay: 200.ms)

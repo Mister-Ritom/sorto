@@ -33,8 +33,14 @@ class ProfileHeader extends ConsumerWidget {
             width: 88,
             height: 88,
             decoration: BoxDecoration(
-              gradient: AppColors.brandGradientDiagonal,
+              gradient: profile.avatarUrl == null ? AppColors.brandGradientDiagonal : null,
               shape: BoxShape.circle,
+              image: profile.avatarUrl != null
+                  ? DecorationImage(
+                      image: NetworkImage(profile.avatarUrl!),
+                      fit: BoxFit.cover,
+                    )
+                  : null,
               boxShadow: [
                 BoxShadow(
                   color: AppColors.primary.withOpacityNew(0.3),
@@ -43,14 +49,16 @@ class ProfileHeader extends ConsumerWidget {
                 ),
               ],
             ),
-            child: Center(
-              child: Text(
-                profile.username.isNotEmpty
-                    ? profile.username[0].toUpperCase()
-                    : '?',
-                style: AppTypography.displayS(color: Colors.white),
-              ),
-            ),
+            child: profile.avatarUrl == null
+                ? Center(
+                    child: Text(
+                      profile.username.isNotEmpty
+                          ? profile.username[0].toUpperCase()
+                          : '?',
+                      style: AppTypography.displayS(color: Colors.white),
+                    ),
+                  )
+                : null,
           ).animate().scale(curve: Curves.elasticOut, duration: 600.ms),
 
           const SizedBox(height: 14),

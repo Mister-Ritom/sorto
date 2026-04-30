@@ -2,6 +2,7 @@
 import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/supabase_service.dart';
+import '../auth/auth_provider.dart';
 import '../../shared/models/profile.dart';
 import '../../shared/models/dare.dart';
 import '../../shared/models/performer_post.dart';
@@ -68,18 +69,28 @@ class EditProfileNotifier extends Notifier<AsyncValue<void>> {
     required String userId,
     String? displayName,
     String? bio,
-    String? avatarUrl,
+    List<int>? avatarBytes,
   }) async {
     state = const AsyncValue.loading();
     try {
+      String? avatarUrl;
+      if (avatarBytes != null) {
+        avatarUrl = await _svc.uploadAvatar(userId, avatarBytes);
+      }
+
       final data = <String, dynamic>{
-        'id': userId,
         'updated_at': DateTime.now().toIso8601String(),
       };
       if (displayName != null) data['display_name'] = displayName;
       if (bio != null) data['bio'] = bio;
       if (avatarUrl != null) data['avatar_url'] = avatarUrl;
-      await _svc.upsertProfile(data);
+      
+      await _svc.updateProfile(userId, data);
+      
+      // Refresh the profile data
+      ref.invalidate(ownProfileProvider);
+      ref.invalidate(currentProfileProvider);
+      
       state = const AsyncValue.data(null);
       return true;
     } catch (e, st) {
