@@ -137,6 +137,11 @@ class SupabaseService {
       'is_disabled': true,
       'disabled_at': DateTime.now().toIso8601String(),
     }).eq('id', userId);
+
+    // Sync to auth metadata for instant local checks
+    await _client.auth.updateUser(UserAttributes(
+      data: {'is_disabled': true},
+    ));
   }
 
   Future<void> enableAccount(String userId) async {
@@ -144,6 +149,11 @@ class SupabaseService {
       'is_disabled': false,
       'disabled_at': null,
     }).eq('id', userId);
+
+    // Sync to auth metadata for instant local checks
+    await _client.auth.updateUser(UserAttributes(
+      data: {'is_disabled': false},
+    ));
   }
 
   // ─── WALLET ──────────────────────────────────────────────────────────────

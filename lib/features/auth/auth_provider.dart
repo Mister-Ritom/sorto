@@ -7,8 +7,9 @@ import '../../shared/models/wallet.dart';
 
 // ─── CURRENT USER ────────────────────────────────────────────────────────────
 final currentUserProvider = StreamProvider<User?>((ref) {
-  return Supabase.instance.client.auth.onAuthStateChange
-      .map((event) => event.session?.user);
+  return Supabase.instance.client.auth.onAuthStateChange.map(
+    (event) => event.session?.user,
+  );
 });
 
 // ─── CURRENT PROFILE ─────────────────────────────────────────────────────────
@@ -40,13 +41,21 @@ class AuthNotifier extends Notifier<AsyncValue<void>> {
 
   SupabaseService get _svc => ref.read(supabaseServiceProvider);
 
-  Future<void> _performAuth(Future<dynamic> Function() action, String name) async {
+  Future<void> _performAuth(
+    Future<dynamic> Function() action,
+    String name,
+  ) async {
     state = const AsyncValue.loading();
     try {
       await action();
       state = const AsyncValue.data(null);
     } catch (e, st) {
-      dev.log('Auth error: $name', error: e, stackTrace: st, name: 'AuthNotifier');
+      dev.log(
+        'Auth error: $name',
+        error: e,
+        stackTrace: st,
+        name: 'AuthNotifier',
+      );
       state = AsyncValue.error(e, st);
     }
   }
@@ -91,5 +100,6 @@ class AuthNotifier extends Notifier<AsyncValue<void>> {
   }
 }
 
-final authNotifierProvider =
-    NotifierProvider<AuthNotifier, AsyncValue<void>>(AuthNotifier.new);
+final authNotifierProvider = NotifierProvider<AuthNotifier, AsyncValue<void>>(
+  AuthNotifier.new,
+);

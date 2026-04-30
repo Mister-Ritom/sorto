@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sorto/core/services/supabase_service.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
@@ -48,14 +49,10 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
     if (state is AsyncError) {
       context.showErrorSnackBar(state.error);
     } else if (state is AsyncData) {
-      final svc = ref.read(supabaseServiceProvider);
-      final userId = svc.currentUserId;
-      if (userId != null) {
-        final profile = await svc.getProfile(userId);
-        if (profile?.isDisabled ?? false) {
-          if (mounted) context.go(Routes.disabledAccount);
-          return;
-        }
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user != null && user.userMetadata?['is_disabled'] == true) {
+        if (mounted) context.go(Routes.disabledAccount);
+        return;
       }
       final prefs = await SharedPreferences.getInstance();
       await prefs.setBool('onboarding_done', true);

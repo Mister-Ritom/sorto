@@ -37,12 +37,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
       return;
     }
 
-    // Logged in → check if account is disabled
-    final svc = ref.read(supabaseServiceProvider);
-    final profile = await svc.getProfile(user.id);
+    // Logged in → check if account is disabled via local metadata (instant)
+    final isDisabled = user.userMetadata?['is_disabled'] == true;
 
-    if (profile?.isDisabled ?? false) {
-      if (!mounted) return;
+    if (isDisabled) {
       context.go(Routes.disabledAccount);
       return;
     }
