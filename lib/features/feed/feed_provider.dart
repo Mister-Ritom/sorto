@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/supabase_service.dart';
 import '../../core/constants/app_constants.dart';
 import '../../shared/models/dare.dart';
-import '../../shared/models/performer_post.dart';
 
 // ─── DARE FEED ────────────────────────────────────────────────────────────────
 class DareFeedState {
@@ -34,16 +33,15 @@ class DareFeedState {
     String? category,
     String? mode,
     int? offset,
-  }) =>
-      DareFeedState(
-        dares: dares ?? this.dares,
-        isLoading: isLoading ?? this.isLoading,
-        hasMore: hasMore ?? this.hasMore,
-        error: error,
-        category: category ?? this.category,
-        mode: mode ?? this.mode,
-        offset: offset ?? this.offset,
-      );
+  }) => DareFeedState(
+    dares: dares ?? this.dares,
+    isLoading: isLoading ?? this.isLoading,
+    hasMore: hasMore ?? this.hasMore,
+    error: error,
+    category: category ?? this.category,
+    mode: mode ?? this.mode,
+    offset: offset ?? this.offset,
+  );
 }
 
 class DareFeedNotifier extends Notifier<DareFeedState> {
@@ -59,8 +57,13 @@ class DareFeedNotifier extends Notifier<DareFeedState> {
     if (!refresh && (state.isLoading || !state.hasMore)) return;
 
     final offset = refresh ? 0 : state.offset;
-    state = state.copyWith(isLoading: true, error: null, offset: offset,
-        dares: refresh ? [] : state.dares, hasMore: true);
+    state = state.copyWith(
+      isLoading: true,
+      error: null,
+      offset: offset,
+      dares: refresh ? [] : state.dares,
+      hasMore: true,
+    );
 
     try {
       final dares = await _svc.getDares(
@@ -79,10 +82,15 @@ class DareFeedNotifier extends Notifier<DareFeedState> {
         offset: offset + dares.length,
       );
     } catch (e, st) {
-      dev.log('Error loading dare feed', error: e, stackTrace: st, name: 'DareFeedNotifier');
+      dev.log(
+        'Error loading dare feed',
+        error: e,
+        stackTrace: st,
+        name: 'DareFeedNotifier',
+      );
       state = state.copyWith(
-        isLoading: false, 
-        error: 'Couldn\'t load the feed. Please check your connection.'
+        isLoading: false,
+        error: 'Couldn\'t load the feed. Please check your connection.',
       );
     }
   }
@@ -91,12 +99,20 @@ class DareFeedNotifier extends Notifier<DareFeedState> {
   void refresh() => load(refresh: true);
 
   void filterCategory(String? category) {
-    state = DareFeedState(category: category, mode: state.mode, isLoading: true);
+    state = DareFeedState(
+      category: category,
+      mode: state.mode,
+      isLoading: true,
+    );
     load(refresh: true);
   }
 
   void filterMode(String? mode) {
-    state = DareFeedState(category: state.category, mode: mode, isLoading: true);
+    state = DareFeedState(
+      category: state.category,
+      mode: mode,
+      isLoading: true,
+    );
     load(refresh: true);
   }
 }
@@ -115,13 +131,7 @@ final dareFeedAsyncProvider = Provider<AsyncValue<List<Dare>>>((ref) {
   return AsyncValue.data(s.dares);
 });
 
-// ─── TREND CREATORS ───────────────────────────────────────────────────────────
-final trendCreatorsProvider = FutureProvider<List<PerformerPost>>((ref) {
-  return ref.read(supabaseServiceProvider).getPerformerPosts(
-    status: 'open',
-    limit: 10,
-  );
-});
+// ─── SEARCH ───────────────────────────────────────────────────────────────────
 
 // ─── SEARCH ───────────────────────────────────────────────────────────────────
 class SearchNotifier extends Notifier<AsyncValue<List<Dare>>> {
@@ -145,10 +155,14 @@ class SearchNotifier extends Notifier<AsyncValue<List<Dare>>> {
       if (category != null) q = q.eq('category', category);
       if (mode != null) q = q.eq('dare_mode', mode);
       final data = await q.limit(30);
-      state = AsyncValue.data(
-          data.map<Dare>((e) => Dare.fromJson(e)).toList());
+      state = AsyncValue.data(data.map<Dare>((e) => Dare.fromJson(e)).toList());
     } catch (e, st) {
-      dev.log('Error searching dares', error: e, stackTrace: st, name: 'SearchNotifier');
+      dev.log(
+        'Error searching dares',
+        error: e,
+        stackTrace: st,
+        name: 'SearchNotifier',
+      );
       state = AsyncValue.error('Search failed. Please try again.', st);
     }
   }
@@ -156,5 +170,6 @@ class SearchNotifier extends Notifier<AsyncValue<List<Dare>>> {
   void clear() => state = const AsyncValue.data([]);
 }
 
-final searchProvider =
-    NotifierProvider<SearchNotifier, AsyncValue<List<Dare>>>(SearchNotifier.new);
+final searchProvider = NotifierProvider<SearchNotifier, AsyncValue<List<Dare>>>(
+  SearchNotifier.new,
+);

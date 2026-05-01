@@ -7,6 +7,7 @@ import '../../../core/router/app_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_typography.dart';
 import '../../../core/constants/app_constants.dart';
+import '../../../features/performer_posts/performer_posts_provider.dart';
 import '../../../features/feed/feed_provider.dart';
 import '../../../features/notifications/notifications_provider.dart';
 import '../../../features/auth/auth_provider.dart';
@@ -53,7 +54,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen>
     // Load more when approaching the end of the list
     if (_scrollCtrl.position.pixels >=
         _scrollCtrl.position.maxScrollExtent - 200) {
-      ref.read(dareFeedProvider.notifier).loadMore();
+      if (_tabController.index == 0) {
+        ref.read(dareFeedProvider.notifier).loadMore();
+      } else {
+        ref.read(performerPostsFeedProvider.notifier).loadMore();
+      }
     }
     // Collapse FAB when scrolling down, expand when scrolling up
     final scrollingDown =
@@ -376,29 +381,62 @@ class _EmptyFeed extends StatelessWidget {
 class _TrendCreatorsTab extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final postsAsync = ref.watch(trendCreatorsProvider);
+    final postsAsync = ref.watch(performerPostsFeedAsyncProvider);
+    final state = ref.watch(performerPostsFeedProvider);
 
-    return postsAsync.when(
-      loading: () => const BentoGridSkeleton(),
-      error: (_, _) => const Center(child: Text('Failed to load creators')),
-      data: (posts) {
-        if (posts.isEmpty) {
-          return Center(
+    return RefreshIndicator(
+      color: AppColors.primary,
+      onRefresh: () async => ref.read(performerPostsFeedProvider.notifier).refresh(),
+      child: postsAsync.when(
+        loading: () => const BentoGridSkeleton(),
+        error: (_, __) => Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text('😕', style: TextStyle(fontSize: 48)),
+              const SizedBox(height: 12),
+              Text('Failed to load creators', style: AppTypography.headingS()),
+              TextButton(
+                onPressed: () =>
+                    ref.read(performerPostsFeedProvider.notifier).refresh(),
+                child: const Text('Retry'),
+              ),
+            ],
+          ),
+        ),
+        data: (posts) {
+          if (posts.isEmpty) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text('🎬', style: TextStyle(fontSize: 64)),
+                  const SizedBox(height: 16),
+                  Text('No creator posts yet.', style: AppTypography.headingM()),
+                ],
+              ),
+            );
+          }
+          return SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text('🎬', style: TextStyle(fontSize: 64)),
-                const SizedBox(height: 16),
-                Text('No creator posts yet.', style: AppTypography.headingM()),
+                BentoGrid(posts: posts),
+                if (state.hasMore)
+                  const Padding(
+                    padding: EdgeInsets.all(24),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                        strokeWidth: 2,
+                      ),
+                    ),
+                  ),
               ],
             ),
           );
-        }
-        return SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          child: BentoGrid(posts: posts),
-        );
-      },
+        },
+      ),
     );
   }
 }

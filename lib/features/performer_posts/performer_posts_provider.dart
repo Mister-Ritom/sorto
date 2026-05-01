@@ -3,12 +3,101 @@ import 'dart:developer' as dev;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/supabase_service.dart';
 import '../../shared/models/performer_post.dart';
+import '../../core/constants/app_constants.dart';
 
 // ─── ALL POSTS FEED ───────────────────────────────────────────────────────────
+class PerformerPostsState {
+  final List<PerformerPost> posts;
+  final bool isLoading;
+  final bool hasMore;
+  final int offset;
+  final String? error;
+
+  const PerformerPostsState({
+    this.posts = const [],
+    this.isLoading = false,
+    this.hasMore = true,
+    this.offset = 0,
+    this.error,
+  });
+
+  PerformerPostsState copyWith({
+    List<PerformerPost>? posts,
+    bool? isLoading,
+    bool? hasMore,
+    int? offset,
+    String? error,
+  }) =>
+      PerformerPostsState(
+        posts: posts ?? this.posts,
+        isLoading: isLoading ?? this.isLoading,
+        hasMore: hasMore ?? this.hasMore,
+        offset: offset ?? this.offset,
+        error: error,
+      );
+}
+
+class PerformerPostsNotifier extends Notifier<PerformerPostsState> {
+  @override
+  PerformerPostsState build() {
+    Future.microtask(() => load());
+    return const PerformerPostsState();
+  }
+
+  SupabaseService get _svc => ref.read(supabaseServiceProvider);
+
+  Future<void> load({bool refresh = false}) async {
+    if (!refresh && (state.isLoading || !state.hasMore)) return;
+
+    final offset = refresh ? 0 : state.offset;
+    state = state.copyWith(
+      isLoading: true,
+      error: null,
+      offset: offset,
+      posts: refresh ? [] : state.posts,
+      hasMore: true,
+    );
+
+    try {
+      final posts = await _svc.getPerformerPosts(
+        limit: AppConstants.defaultPageSize,
+        offset: offset,
+        status: 'open',
+      );
+      final hasMore = posts.length == AppConstants.defaultPageSize;
+      final current = refresh ? <PerformerPost>[] : state.posts;
+      state = state.copyWith(
+        posts: [...current, ...posts],
+        isLoading: false,
+        hasMore: hasMore,
+        offset: offset + posts.length,
+      );
+    } catch (e, st) {
+      dev.log('Error loading performer posts',
+          error: e, stackTrace: st, name: 'PerformerPostsNotifier');
+      state = state.copyWith(
+        isLoading: false,
+        error: 'Failed to load posts.',
+      );
+    }
+  }
+
+  void loadMore() => load();
+  void refresh() => load(refresh: true);
+}
+
 final performerPostsFeedProvider =
-    FutureProvider<List<PerformerPost>>((ref) async {
-  return ref.read(supabaseServiceProvider).getPerformerPosts(
-      status: 'open', limit: 30);
+    NotifierProvider<PerformerPostsNotifier, PerformerPostsState>(
+  PerformerPostsNotifier.new,
+);
+
+final performerPostsFeedAsyncProvider = Provider<AsyncValue<List<PerformerPost>>>((ref) {
+  final s = ref.watch(performerPostsFeedProvider);
+  if (s.isLoading && s.posts.isEmpty) return const AsyncValue.loading();
+  if (s.error != null && s.posts.isEmpty) {
+    return AsyncValue.error(s.error!, StackTrace.empty);
+  }
+  return AsyncValue.data(s.posts);
 });
 
 // ─── SINGLE POST ──────────────────────────────────────────────────────────────
