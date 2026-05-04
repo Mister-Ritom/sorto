@@ -322,7 +322,7 @@ client_id = "884254093205-ooq7v12dm10hsp3qcrg4r939575tcra3.apps.googleuserconten
 secret = "env(WEB_SECRET)"
 # This must match EXACTLY what you put in Google Cloud Console
 redirect_uri = "http://127.0.0.1:54321/auth/v1/callback" 
-skip_nonce_check = false
+skip_nonce_check = true
 
 # Use Firebase Auth as a third-party provider alongside Supabase Auth.
 [auth.third_party.firebase]

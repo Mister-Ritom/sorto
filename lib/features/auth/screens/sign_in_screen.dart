@@ -274,9 +274,24 @@ class _SignInScreenState extends ConsumerState<SignInScreen> {
                             label: 'Continue with Google',
                             variant: SortoButtonVariant.outline,
                             icon: Icons.g_mobiledata_rounded,
-                            onPressed: () => ref
-                                .read(authNotifierProvider.notifier)
-                                .signInWithGoogle(),
+                            isLoading: isLoading,
+                            onPressed: isLoading
+                                ? null
+                                : () async {
+                                    HapticFeedback.lightImpact();
+                                    await ref
+                                        .read(authNotifierProvider.notifier)
+                                        .signInWithGoogle();
+                                    if (mounted) {
+                                      final state = ref.read(
+                                        authNotifierProvider,
+                                      );
+                                      if (state is AsyncError &&
+                                          context.mounted) {
+                                        context.showErrorSnackBar(state.error);
+                                      }
+                                    }
+                                  },
                           ).animate(delay: 650.ms).fadeIn(duration: 300.ms),
 
                           const SizedBox(height: 40),

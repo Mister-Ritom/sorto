@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS public.profiles (
 -- WALLETS
 -- ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.wallets (
-  id                  UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id             UUID UNIQUE NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   coin_balance        INT NOT NULL DEFAULT 0 CHECK (coin_balance >= 0),
   escrowed_balance    INT NOT NULL DEFAULT 0 CHECK (escrowed_balance >= 0),
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS public.wallets (
 -- TRANSACTIONS
 -- ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.transactions (
-  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id           UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   dare_id           UUID,  -- FK added after dares table
   type              TEXT NOT NULL CHECK (type IN (
@@ -69,7 +69,7 @@ CREATE TABLE IF NOT EXISTS public.transactions (
 -- DARES
 -- ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.dares (
-  id                    UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                    UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   poster_id             UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   performer_id          UUID REFERENCES public.profiles(id),
   title                 TEXT NOT NULL CHECK (length(title) BETWEEN 10 AND 100),
@@ -102,7 +102,7 @@ ALTER TABLE public.transactions
 -- DARE SUBMISSIONS
 -- ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.dare_submissions (
-  id                UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   dare_id           UUID NOT NULL REFERENCES public.dares(id) ON DELETE CASCADE,
   performer_id      UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   proof_video_url   TEXT,
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS public.dare_submissions (
 -- PERFORMER POSTS
 -- ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.performer_posts (
-  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   performer_id    UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   title           TEXT NOT NULL CHECK (length(title) BETWEEN 10 AND 100),
   description     TEXT NOT NULL CHECK (length(description) BETWEEN 20 AND 1000),
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS public.performer_posts (
 -- NOTIFICATIONS
 -- ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.notifications (
-  id          UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id     UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   type        TEXT NOT NULL,
   title       TEXT NOT NULL,
@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS public.notifications (
 -- WITHDRAWAL REQUESTS
 -- ────────────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS public.withdrawal_requests (
-  id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id         UUID NOT NULL REFERENCES public.profiles(id) ON DELETE CASCADE,
   coin_amount     INT NOT NULL CHECK (coin_amount >= 100),
   inr_amount      INT NOT NULL,  -- coin_amount * 1

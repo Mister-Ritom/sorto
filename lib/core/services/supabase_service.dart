@@ -53,26 +53,14 @@ class SupabaseService {
     const webClientId = ApiConstants.googleWebClientId;
     const iosClientId = ApiConstants.googleIosClientId;
 
-    // In google_sign_in 7.x+, you use the singleton instance and initialize it first.
+    // In google_sign_in 7.x+, use the singleton instance.
     await GoogleSignIn.instance.initialize(
       clientId: kIsWeb ? webClientId : iosClientId,
       serverClientId: webClientId,
     );
 
-    // 1. Authenticate to get identity info
     final googleUser = await GoogleSignIn.instance.authenticate();
-
-    // 2. Authorize scopes to get the accessToken (required for Supabase)
-    final authorization = await googleUser.authorizationClient.authorizeScopes([
-      'openid',
-      'email',
-      'profile',
-    ]);
-
-    // 3. Get the ID Token (authentication)
-    final googleAuth = googleUser.authentication;
-    final idToken = googleAuth.idToken;
-    final accessToken = authorization.accessToken;
+    final idToken = googleUser.authentication.idToken;
 
     if (idToken == null) {
       throw 'No Google ID Token found.';
@@ -81,7 +69,6 @@ class SupabaseService {
     return _client.auth.signInWithIdToken(
       provider: OAuthProvider.google,
       idToken: idToken,
-      accessToken: accessToken,
     );
   }
 
@@ -133,27 +120,26 @@ class SupabaseService {
   }
 
   Future<void> disableAccount(String userId) async {
-    await _client.from('profiles').update({
-      'is_disabled': true,
-      'disabled_at': DateTime.now().toIso8601String(),
-    }).eq('id', userId);
+    await _client
+        .from('profiles')
+        .update({
+          'is_disabled': true,
+          'disabled_at': DateTime.now().toIso8601String(),
+        })
+        .eq('id', userId);
 
     // Sync to auth metadata for instant local checks
-    await _client.auth.updateUser(UserAttributes(
-      data: {'is_disabled': true},
-    ));
+    await _client.auth.updateUser(UserAttributes(data: {'is_disabled': true}));
   }
 
   Future<void> enableAccount(String userId) async {
-    await _client.from('profiles').update({
-      'is_disabled': false,
-      'disabled_at': null,
-    }).eq('id', userId);
+    await _client
+        .from('profiles')
+        .update({'is_disabled': false, 'disabled_at': null})
+        .eq('id', userId);
 
     // Sync to auth metadata for instant local checks
-    await _client.auth.updateUser(UserAttributes(
-      data: {'is_disabled': false},
-    ));
+    await _client.auth.updateUser(UserAttributes(data: {'is_disabled': false}));
   }
 
   // ─── WALLET ──────────────────────────────────────────────────────────────
