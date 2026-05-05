@@ -3,11 +3,27 @@
     "short_name": "Sorto",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#080808",
+    "background_color": "#FFFFFF",
     "theme_color": "#A855F7",
     "description": "Dare to earn. The ultimate challenge platform.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
+    "screenshots": [
+        {
+            "src": "screenshots/mobile.jpg",
+            "sizes": "1024x1024",
+            "type": "image/jpeg",
+            "form_factor": "narrow",
+            "label": "Sorto Mobile Experience"
+        },
+        {
+            "src": "screenshots/desktop.jpg",
+            "sizes": "1024x1024",
+            "type": "image/jpeg",
+            "form_factor": "wide",
+            "label": "Sorto Desktop Experience"
+        }
+    ],
     "icons": [
         {
             "src": "icons/Icon-192.png",
@@ -30,22 +46,6 @@
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "maskable"
-        }
-    ],
-    "screenshots": [
-        {
-            "src": "screenshots/mobile.jpg",
-            "sizes": "1024x1024",
-            "type": "image/jpeg",
-            "form_factor": "narrow",
-            "label": "Sorto Mobile Experience"
-        },
-        {
-            "src": "screenshots/desktop.jpg",
-            "sizes": "1024x1024",
-            "type": "image/jpeg",
-            "form_factor": "wide",
-            "label": "Sorto Desktop Experience"
         }
     ]
 }
