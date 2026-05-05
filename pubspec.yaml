@@ -115,6 +115,7 @@ flutter:
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
+  remove_alpha_ios: true
   image_path: "assets/icons/sorto_icon_light.png"
   image_path_ios_dark_transparent: "assets/icons/sorto_icon_dark.png"
   image_path_ios_tinted_grayscale: "assets/icons/sorto_icon_monochrome.png"

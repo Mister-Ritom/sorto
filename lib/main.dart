@@ -12,6 +12,11 @@ import 'app.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   // Lock to portrait by default (can unlock on dare detail for landscape video)
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
