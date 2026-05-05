@@ -158,10 +158,21 @@ supabase functions deploy performer-post-fund
 
 ### 5. Set secrets
 
+Copy `.env.example` to `.env` (this file is ignored by git) and fill in your keys:
+
 ```bash
-supabase secrets set GEMINI_API_KEY=your_gemini_key
-# SUPABASE_SERVICE_ROLE_KEY and SUPABASE_URL are injected automatically
+cp .env.example .env
 ```
+
+To push these secrets to your remote Supabase project:
+
+```bash
+# Set all secrets at once from your .env file
+supabase secrets set --env-file .env
+```
+
+> [!NOTE]
+> `SUPABASE_SERVICE_ROLE_KEY` and `SUPABASE_URL` are injected automatically by the platform. You only need to set external keys like Gemini, Razorpay, and OpenAI.
 
 ### 6. Create storage buckets
 
@@ -180,15 +191,17 @@ flutter run
 
 ## Environment Variables
 
-| Variable                    | Location             | Purpose                              |
-| --------------------------- | -------------------- | ------------------------------------ |
-| `SUPABASE_URL`              | `api_constants.dart` | Project endpoint                     |
-| `SUPABASE_ANON_KEY`         | `api_constants.dart` | Client-safe public key               |
-| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Secrets     | Edge Function auth (never in client) |
-| `GEMINI_API_KEY`            | Supabase Secrets     | AI moderation (never in client)      |
-| `RAZORPAY_KEY_ID`           | `api_constants.dart` | Web payment gateway                  |
-| `REVENUECAT_APPLE_KEY`      | `api_constants.dart` | iOS native IAP                       |
-| `REVENUECAT_GOOGLE_KEY`     | `api_constants.dart` | Android native IAP                   |
+| Variable                    | Location             | Purpose                               |
+| --------------------------- | -------------------- | ------------------------------------- |
+| `SUPABASE_URL`              | `api_constants.dart` | Project endpoint                      |
+| `SUPABASE_ANON_KEY`         | `api_constants.dart` | Client-safe public key                |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase Secrets     | Edge Function auth (never in client)  |
+| `GEMINI_API_KEY`            | Supabase Secrets     | AI moderation (never in client)       |
+| `RAZORPAY_KEY_ID`           | `api_constants.dart` | Web payment gateway (public key)      |
+| `RAZORPAY_KEY_SECRET`       | Supabase Secrets     | Payment verification (secret)         |
+| `WEB_SECRET`                | Supabase Secrets     | Google Auth Web Client Secret         |
+| `REVENUECAT_APPLE_KEY`      | `api_constants.dart` | iOS native IAP                        |
+| `REVENUECAT_GOOGLE_KEY`     | `api_constants.dart` | Android native IAP                    |
 
 ---
 
