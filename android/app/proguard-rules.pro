@@ -24,3 +24,7 @@
 
 # Custom models
 -keep class me.ritom.sorto.models.** { *; }
+
+# Ignore missing Play Core classes (common Flutter R8 issue)
+-dontwarn com.google.android.play.core.**
+
