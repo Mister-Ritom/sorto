@@ -53,6 +53,7 @@
 				<ul style="list-style: none; display: flex; flex-direction: column; gap: 16px; font-size: 15px; opacity: 0.8;">
 					<li><a href="/privacy">Privacy Policy</a></li>
 					<li><a href="/terms">Terms of Service</a></li>
+					<li><a href="/delete">Delete Account</a></li>
 				</ul>
 			</div>
 			<div>
